@@ -387,7 +387,7 @@ function save(){ localStorage.setItem("hg_reqs", JSON.stringify(S.reqs)); localS
 let toastTimer=null;
 function toast(msg){ const el=document.getElementById("toast"); el.textContent=msg; el.style.display="block"; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.style.display="none", 2800); }
 const I = (n, c) => `<svg class="icn ${c || ""}"><use href="#i-${n}"/></svg>`;
-const PAY = { fee: 0.15, api: "" }; // Pasarela Stripe (backend HogarGo). api vacío = modo demo.
+const PAY = { fee: 0.15, api: "https://europe-west1-hogargo-lu.cloudfunctions.net" }; // Pasarela Stripe (backend HogarGo). api vacío = modo demo.
 const RANGES = { limpieza:[20,28], compras:[18,24], manitas:[35,55], mascotas:[18,22], instalaciones:[55,85], jardin:[25,40], orden:[40,60] };
 function feeOf(total){ if(!(total>0)) return 0; return Math.min(total, Math.max(5, Math.round(total * PAY.fee * 100) / 100)); }
 function activatePayouts(){
