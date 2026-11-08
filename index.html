@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>HogarGo — Servicios para tu hogar</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='11' fill='%230F766E'/%3E%3Cpath d='M13 25.5 24 15l11 10.5' stroke='white' stroke-width='3.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M16.8 23.6V34h14.4V23.6' stroke='white' stroke-width='3.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M20.6 28.6l2.5 2.5 4.5-4.9' stroke='%23F59E0B' stroke-width='3.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
 :root{
   --teal:#0F766E; --teal-d:#0B5B54; --amber:#F59E0B; --ink:#12211F; --mut:#5B6B68;
@@ -21,7 +22,8 @@ input,select,textarea{font-family:inherit; font-size:16px}
 .wrap{max-width:560px; margin:0 auto; padding:0 16px 96px}
 header.top{position:sticky; top:0; z-index:30; background:rgba(246,248,247,.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
 .top-in{max-width:560px; margin:0 auto; padding:10px 16px; display:flex; align-items:center; gap:10px}
-.logo{font-size:22px; font-weight:800; letter-spacing:-.02em}
+.logo{display:flex; align-items:center; gap:9px; font-size:22px; font-weight:800; letter-spacing:-.02em}
+.logo-mark{width:36px; height:36px; flex:none}
 .logo b{color:var(--teal)} .logo span{color:var(--amber)}
 .langs{margin-left:auto; display:flex; gap:4px}
 .langs button{border:1px solid var(--line); background:#fff; border-radius:999px; padding:5px 10px; font-size:13px; font-weight:600; color:var(--mut)}
@@ -87,11 +89,62 @@ nav.bottom button.on{color:var(--teal)}
 .empty{color:var(--mut); text-align:center; padding:26px 10px; font-size:15px}
 .note{font-size:13px; color:var(--mut)}
 .fee{background:#FFFBEB; border:1px solid #FDE68A; border-radius:12px; padding:10px 12px; font-size:14px; margin:10px 0}
+
+/* ===== Sistema de iconos propio HogarGo (SVG de línea, trazo 1.8) ===== */
+.icn{width:24px; height:24px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:none}
+.icn.fill{fill:currentColor; stroke:none}
+.icn.sm{width:17px; height:17px; vertical-align:-3px}
+.icn.xs{width:14px; height:14px; vertical-align:-2px}
+.tile{width:52px; height:52px; border-radius:15px; background:var(--soft); color:var(--teal); display:flex; align-items:center; justify-content:center; flex:none}
+.tile .icn{width:27px; height:27px}
+.tile.amber{background:#FDF0DC; color:#B45309}
+.tile.sm{width:42px; height:42px; border-radius:12px}
+.tile.sm .icn{width:23px; height:23px}
+.avatar{background:var(--av,var(--teal)); color:#fff; font-weight:800; letter-spacing:.02em}
+.sec-t{display:flex; align-items:center; gap:9px}
+.sec-t::before{content:""; width:4px; height:20px; border-radius:2px; background:var(--amber); flex:none}
+.hero{position:relative; overflow:hidden}
+.hero .wm{position:absolute; right:-18px; bottom:-24px; width:150px; height:150px; color:#fff; opacity:.14; stroke-width:1.1}
+.hero .loc{display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.28); padding:4px 11px; border-radius:999px; font-size:12.5px; font-weight:700; margin-bottom:10px}
+.cat{display:flex; flex-direction:column; align-items:flex-start}
+.verified{display:inline-flex; align-items:center; gap:4px}
+.tag{display:inline-flex; align-items:center; gap:5px}
+.back{display:inline-flex; align-items:center; gap:6px}
+.back .icn{width:19px; height:19px}
+nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px}
+.search{position:relative}
+.search .s-ic{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--mut); width:19px; height:19px; pointer-events:none}
+.search input{padding-left:38px}
+.btn{box-shadow:0 4px 14px rgba(15,118,110,.22)}
+.btn.sec,.btn.ghost,.btn.warn{box-shadow:none}
+.plan h3 .icn{color:var(--amber)}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.2 9.4V20h11.6V9.4"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M15.8 15.8 20.5 20.5"/></symbol>
+<symbol id="i-toolbox" viewBox="0 0 24 24"><rect x="3.5" y="9.5" width="17" height="9.5" rx="2"/><path d="M9 9.5V7a3 3 0 0 1 6 0v2.5"/><path d="M3.5 14h17"/><rect x="10" y="12.9" width="4" height="2.3" rx="0.7"/></symbol>
+<symbol id="i-broom" viewBox="0 0 24 24"><path d="M16.8 3.2 11 12.8"/><path d="M11 12.8 6.4 20.4"/><path d="M11 12.8 8.6 20.9"/><path d="M11 12.8l.6 8.3"/><path d="M11 12.8l3.4 7.3"/><path d="M7.4 16.1c2.3 1 4.8 1.1 7.1.1"/></symbol>
+<symbol id="i-basket" viewBox="0 0 24 24"><path d="M5.2 9.5h13.6l-1.5 9.3a2 2 0 0 1-2 1.7H8.7a2 2 0 0 1-2-1.7Z"/><path d="M8.6 9.5 12 4.8l3.4 4.7"/><path d="M9.8 13.2v3.4M14.2 13.2v3.4"/></symbol>
+<symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+<symbol id="i-paw" viewBox="0 0 24 24"><ellipse cx="12" cy="15.9" rx="3.8" ry="3"/><ellipse cx="5.4" cy="11.1" rx="1.7" ry="2.1" transform="rotate(-18 5.4 11.1)"/><ellipse cx="9.2" cy="8.4" rx="1.8" ry="2.3" transform="rotate(-6 9.2 8.4)"/><ellipse cx="14.8" cy="8.4" rx="1.8" ry="2.3" transform="rotate(6 14.8 8.4)"/><ellipse cx="18.6" cy="11.1" rx="1.7" ry="2.1" transform="rotate(18 18.6 11.1)"/></symbol>
+<symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 3.5v17M4.6 7.8l14.8 8.4M19.4 7.8 4.6 16.2"/><path d="M9.9 5.4 12 3.5l2.1 1.9M9.9 18.6 12 20.5l2.1-1.9"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5.5 19.5C5.5 11 10.5 5.8 19.8 4.7c-.6 9.3-5.7 14-13 14.2"/><path d="M5.5 19.5c2.3-5 5.8-8.8 10.5-11.7"/></symbol>
+<symbol id="i-wardrobe" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="1.5"/><path d="M12 3.5v17"/><path d="M10 11.3v2.2M14 11.3v2.2"/></symbol>
+<symbol id="i-clip" viewBox="0 0 24 24"><rect x="5.5" y="4.5" width="13" height="16.5" rx="2"/><rect x="9.3" y="2.8" width="5.4" height="3.6" rx="1.2"/><path d="M9 11h6M9 14.8h6"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5.8" width="16" height="14.2" rx="2"/><path d="M4 10.3h16M8.3 3.5v4M15.7 3.5v4"/></symbol>
+<symbol id="i-calcheck" viewBox="0 0 24 24"><rect x="4" y="5.8" width="16" height="14.2" rx="2"/><path d="M4 10.3h16M8.3 3.5v4M15.7 3.5v4"/><path d="M9.2 15.1l2 2 3.6-3.9"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20.2c1.1-3.5 3.7-5.2 7-5.2s5.9 1.7 7 5.2"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.2S5.6 15.7 5.6 10.6a6.4 6.4 0 1 1 12.8 0c0 5.1-6.4 10.6-6.4 10.6Z"/><circle cx="12" cy="10.4" r="2.4"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6V12l3 2"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M5 19.2 5.9 15 16.4 4.5a2.12 2.12 0 0 1 3 3L8.9 18Z"/><path d="M14.6 6.3l3 3"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 2.4v5.7c0 4.5-2.9 7.7-7 9.4-4.1-1.7-7-4.9-7-9.4V5.4Z"/><path d="M9.1 11.7l2.1 2.1 3.7-3.9"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.7l2.5 5.2 5.7.8-4.1 4 1 5.7L12 16.8l-5.1 2.6 1-5.7-4.1-4 5.7-.8Z"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5.6"/><path d="M11 5.8 5 12l6 6.2"/></symbol>
+</defs></svg>
 <header class="top"><div class="top-in">
-  <div class="logo">🏠 <b>Hogar</b><span>Go</span></div>
+  <div class="logo"><svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="12" fill="#0F766E"/><path d="M13 25.5 24 15l11 10.5" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.8 23.6V34h14.4V23.6" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.6 28.6l2.5 2.5 4.5-4.9" stroke="#F59E0B" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Hogar</b><span>Go</span></div></div>
   <div class="langs">
     <button id="lg-es" onclick="setLang('es')">ES</button>
     <button id="lg-fr" onclick="setLang('fr')">FR</button>
@@ -104,14 +157,16 @@ nav.bottom button.on{color:var(--teal)}
   <!-- HOME -->
   <section id="scr-home" class="screen on">
     <div class="hero">
+      <svg class="icn wm"><use href="#i-home"/></svg>
+      <span class="loc"><svg class="icn sm"><use href="#i-pin"/></svg>Luxemburgo</span>
       <h1 data-i="hero_t">Tu hogar, resuelto en 3 toques</h1>
       <p data-i="hero_s">Profesionales verificados de limpieza, compras, reparaciones y mascotas, cerca de ti en Luxemburgo.</p>
     </div>
     <div class="role-row">
-      <button class="role on" id="role-client" onclick="setRole('client')"><div class="ic">🔎</div><h3 data-i="need">Necesito un servicio</h3><p data-i="need_s">Encuentra y reserva un profesional</p></button>
-      <button class="role" id="role-pro" onclick="setRole('pro')"><div class="ic">🧰</div><h3 data-i="offer">Ofrezco servicios</h3><p data-i="offer_s">Crea tu perfil y recibe clientes</p></button>
+      <button class="role on" id="role-client" onclick="setRole('client')"><div class="tile sm"><svg class="icn"><use href="#i-search"/></svg></div><h3 data-i="need">Necesito un servicio</h3><p data-i="need_s">Encuentra y reserva un profesional</p></button>
+      <button class="role" id="role-pro" onclick="setRole('pro')"><div class="tile sm"><svg class="icn"><use href="#i-toolbox"/></svg></div><h3 data-i="offer">Ofrezco servicios</h3><p data-i="offer_s">Crea tu perfil y recibe clientes</p></button>
     </div>
-    <div class="search">
+    <div class="search"><svg class="icn s-ic"><use href="#i-search"/></svg>
       <input id="q" type="text" data-i-ph="search_ph" placeholder="¿Qué necesitas? Ej.: limpieza, montar un mueble…">
       <select id="qcity"></select>
     </div>
@@ -127,7 +182,7 @@ nav.bottom button.on{color:var(--teal)}
 
   <!-- CATEGORY -->
   <section id="scr-cat" class="screen">
-    <button class="back" onclick="go('home')">← <span data-i="back">Volver</span></button>
+    <button class="back" onclick="go('home')"><svg class="icn"><use href="#i-arrow"/></svg><span data-i="back">Volver</span></button>
     <h2 class="sec-t" id="cat-title"></h2>
     <p class="sec-s" id="cat-desc"></p>
     <div class="subs" id="cat-subs"></div>
@@ -136,13 +191,13 @@ nav.bottom button.on{color:var(--teal)}
 
   <!-- PRO DETAIL -->
   <section id="scr-pro" class="screen">
-    <button class="back" onclick="goBack()">← <span data-i="back">Volver</span></button>
+    <button class="back" onclick="goBack()"><svg class="icn"><use href="#i-arrow"/></svg><span data-i="back">Volver</span></button>
     <div id="pro-detail"></div>
   </section>
 
   <!-- BOOKING -->
   <section id="scr-book" class="screen">
-    <button class="back" onclick="go('pro')">← <span data-i="back">Volver</span></button>
+    <button class="back" onclick="go('pro')"><svg class="icn"><use href="#i-arrow"/></svg><span data-i="back">Volver</span></button>
     <h2 class="sec-t" data-i="book_t">Solicitar servicio</h2>
     <div class="card">
       <div id="book-with"></div>
@@ -199,47 +254,47 @@ nav.bottom button.on{color:var(--teal)}
 </div>
 
 <nav class="bottom"><div class="in">
-  <button id="nav-home" class="on" onclick="go('home')"><span class="ic">🏠</span><span data-i="n_home">Inicio</span></button>
-  <button id="nav-reqs" onclick="go('reqs')"><span class="ic">🧾</span><span data-i="n_reqs">Solicitudes</span></button>
-  <button id="nav-plans" onclick="go('plans')"><span class="ic">⭐</span><span data-i="n_plans">Planes</span></button>
-  <button id="nav-profile" onclick="go('profile')"><span class="ic">👤</span><span data-i="n_prof">Mi perfil</span></button>
+  <button id="nav-home" class="on" onclick="go('home')"><svg class="icn"><use href="#i-home"/></svg><span data-i="n_home">Inicio</span></button>
+  <button id="nav-reqs" onclick="go('reqs')"><svg class="icn"><use href="#i-clip"/></svg><span data-i="n_reqs">Solicitudes</span></button>
+  <button id="nav-plans" onclick="go('plans')"><svg class="icn"><use href="#i-calcheck"/></svg><span data-i="n_plans">Planes</span></button>
+  <button id="nav-profile" onclick="go('profile')"><svg class="icn"><use href="#i-user"/></svg><span data-i="n_prof">Mi perfil</span></button>
 </div></nav>
 
 <div class="toast" id="toast"></div>
 <script>
 /* ============ HogarGo v1 — prototipo funcional (datos demo + localStorage) ============ */
 const I18N = {
-es:{hero_t:"Tu hogar, resuelto en 3 toques",hero_s:"Profesionales verificados de limpieza, compras, reparaciones y mascotas, cerca de ti en Luxemburgo.",need:"Necesito un servicio",need_s:"Encuentra y reserva un profesional",offer:"Ofrezco servicios",offer_s:"Crea tu perfil y recibe clientes",search_ph:"¿Qué necesitas? Ej.: limpieza, montar un mueble…",cats_t:"Servicios fundamentales",cats_s:"Cuatro categorías claras para empezar: alta frecuencia, calidad controlada y clientes que repiten.",phase2_t:"Fase 2 · Muy pronto",phase2_s:"Se activan cuando la base de profesionales esté consolidada.",feat_t:"Profesionales destacados",back:"Volver",book_t:"Solicitar servicio",f_service:"Servicio",f_date:"Día",f_time:"Hora",f_hours:"Horas estimadas",f_addr:"Dirección / zona",addr_ph:"Calle y número, ciudad",f_notes:"Detalles para el profesional",book_send:"Enviar solicitud",book_note:"Sin pago por adelantado en esta versión de prueba: el profesional confirma y acordáis el pago dentro de la app.",reqs_t:"Mis solicitudes",reqs_s:"Aquí ves el estado de cada servicio que has pedido.",plans_t:"Planes «Hogar al día»",plans_s:"Suscripción mensual con servicios combinados. Precios de ejemplo, editables.",prof_t:"Mi perfil",as_client:"Como cliente",client_note:"Reserva servicios desde Inicio. Tus solicitudes quedan guardadas en «Solicitudes».",see_plans:"Ver planes «Hogar al día»",as_pro:"Como profesional",pro_note:"Completa tu perfil y aparecerás en el listado de tu categoría. Comisión de lanzamiento: 12 % solo si entra un servicio pagado.",f_name:"Nombre",f_cat:"Categoría",f_sub:"Servicio principal",f_price:"Precio por hora (€)",f_city:"Ciudad / zona",f_bio:"Sobre ti",save_pro:"Guardar y publicar mi perfil",del_pro:"Eliminar mi perfil de profesional",n_home:"Inicio",n_reqs:"Solicitudes",n_plans:"Planes",n_prof:"Mi perfil",all_cities:"Todas las zonas",pros:"profesionales",per_h:"€/hora",verified:"Verificado ✓",jobs:"trabajos",request:"Solicitar",soon:"Próximamente",all:"Todos",no_pros:"Aún no hay profesionales en esta zona. Prueba con «Todas las zonas».",no_reqs:"Todavía no has pedido ningún servicio.",pending:"Pendiente",cancel:"Cancelar",cancelled:"Cancelada",est_total:"Total estimado",with_pro:"Con",sent_ok:"Solicitud enviada ✓ El profesional la verá al momento.",pro_saved:"Perfil publicado ✓ Ya apareces en tu categoría.",pro_deleted:"Perfil de profesional eliminado.",fill_name:"Escribe tu nombre para publicar el perfil.",choose_plan:"Quiero este plan",plan_ok:"Plan anotado ✓ Te contactaremos para activarlo (demo).",reviews:"Valoraciones recientes"},
-fr:{hero_t:"Votre maison, réglée en 3 touches",hero_s:"Des professionnels vérifiés pour le ménage, les courses, les réparations et les animaux, près de chez vous au Luxembourg.",need:"J'ai besoin d'un service",need_s:"Trouvez et réservez un professionnel",offer:"Je propose des services",offer_s:"Créez votre profil et recevez des clients",search_ph:"Que vous faut-il ? Ex. : ménage, monter un meuble…",cats_t:"Services fondamentaux",cats_s:"Quatre catégories claires pour démarrer : haute fréquence, qualité contrôlée, clients fidèles.",phase2_t:"Phase 2 · Bientôt",phase2_s:"Activés une fois la base de professionnels consolidée.",feat_t:"Professionnels en vedette",back:"Retour",book_t:"Demander le service",f_service:"Service",f_date:"Jour",f_time:"Heure",f_hours:"Heures estimées",f_addr:"Adresse / zone",addr_ph:"Rue et numéro, ville",f_notes:"Détails pour le professionnel",book_send:"Envoyer la demande",book_note:"Pas de paiement à l'avance dans cette version d'essai : le professionnel confirme et vous réglez le paiement dans l'app.",reqs_t:"Mes demandes",reqs_s:"Suivez ici l'état de chaque service demandé.",plans_t:"Formules « Maison au jour le jour »",plans_s:"Abonnement mensuel combinant plusieurs services. Prix indicatifs, modifiables.",prof_t:"Mon profil",as_client:"En tant que client",client_note:"Réservez depuis l'accueil. Vos demandes sont gardées dans « Demandes ».",see_plans:"Voir les formules",as_pro:"En tant que professionnel",pro_note:"Complétez votre profil pour apparaître dans votre catégorie. Commission de lancement : 12 % uniquement si un service payé entre.",f_name:"Nom",f_cat:"Catégorie",f_sub:"Service principal",f_price:"Prix par heure (€)",f_city:"Ville / zone",f_bio:"À propos de vous",save_pro:"Enregistrer et publier mon profil",del_pro:"Supprimer mon profil professionnel",n_home:"Accueil",n_reqs:"Demandes",n_plans:"Formules",n_prof:"Profil",all_cities:"Toutes les zones",pros:"professionnels",per_h:"€/heure",verified:"Vérifié ✓",jobs:"missions",request:"Demander",soon:"Bientôt",all:"Tous",no_pros:"Pas encore de professionnels dans cette zone. Essayez « Toutes les zones ».",no_reqs:"Vous n'avez encore demandé aucun service.",pending:"En attente",cancel:"Annuler",cancelled:"Annulée",est_total:"Total estimé",with_pro:"Avec",sent_ok:"Demande envoyée ✓ Le professionnel la voit tout de suite.",pro_saved:"Profil publié ✓ Vous apparaissez dans votre catégorie.",pro_deleted:"Profil professionnel supprimé.",fill_name:"Écrivez votre nom pour publier le profil.",choose_plan:"Je veux cette formule",plan_ok:"Formule notée ✓ Nous vous contacterons pour l'activer (démo).",reviews:"Avis récents"},
-en:{hero_t:"Your home, sorted in 3 taps",hero_s:"Verified professionals for cleaning, shopping, repairs and pets, near you in Luxembourg.",need:"I need a service",need_s:"Find and book a professional",offer:"I offer services",offer_s:"Create your profile and get clients",search_ph:"What do you need? E.g. cleaning, furniture assembly…",cats_t:"Core services",cats_s:"Four clear categories to launch: high frequency, controlled quality, repeat clients.",phase2_t:"Phase 2 · Coming soon",phase2_s:"Activated once the professional base is consolidated.",feat_t:"Featured professionals",back:"Back",book_t:"Request service",f_service:"Service",f_date:"Day",f_time:"Time",f_hours:"Estimated hours",f_addr:"Address / area",addr_ph:"Street and number, city",f_notes:"Details for the professional",book_send:"Send request",book_note:"No upfront payment in this trial version: the professional confirms and you arrange payment inside the app.",reqs_t:"My requests",reqs_s:"Track the status of every service you have requested.",plans_t:"“Home Sorted” plans",plans_s:"Monthly subscription combining services. Sample prices, editable.",prof_t:"My profile",as_client:"As a client",client_note:"Book services from Home. Your requests are stored under “Requests”.",see_plans:"See the plans",as_pro:"As a professional",pro_note:"Complete your profile to appear in your category. Launch commission: 12% only when a paid service comes in.",f_name:"Name",f_cat:"Category",f_sub:"Main service",f_price:"Price per hour (€)",f_city:"City / area",f_bio:"About you",save_pro:"Save and publish my profile",del_pro:"Delete my professional profile",n_home:"Home",n_reqs:"Requests",n_plans:"Plans",n_prof:"Profile",all_cities:"All areas",pros:"professionals",per_h:"€/hour",verified:"Verified ✓",jobs:"jobs",request:"Request",soon:"Coming soon",all:"All",no_pros:"No professionals in this area yet. Try “All areas”.",no_reqs:"You haven't requested any service yet.",pending:"Pending",cancel:"Cancel",cancelled:"Cancelled",est_total:"Estimated total",with_pro:"With",sent_ok:"Request sent ✓ The professional sees it right away.",pro_saved:"Profile published ✓ You now appear in your category.",pro_deleted:"Professional profile deleted.",fill_name:"Enter your name to publish the profile.",choose_plan:"I want this plan",plan_ok:"Plan noted ✓ We'll contact you to activate it (demo).",reviews:"Recent reviews"}
+es:{hero_t:"Tu hogar, resuelto en 3 toques",hero_s:"Profesionales verificados de limpieza, compras, reparaciones y mascotas, cerca de ti en Luxemburgo.",need:"Necesito un servicio",need_s:"Encuentra y reserva un profesional",offer:"Ofrezco servicios",offer_s:"Crea tu perfil y recibe clientes",search_ph:"¿Qué necesitas? Ej.: limpieza, montar un mueble…",cats_t:"Servicios fundamentales",cats_s:"Cuatro categorías claras para empezar: alta frecuencia, calidad controlada y clientes que repiten.",phase2_t:"Fase 2 · Muy pronto",phase2_s:"Se activan cuando la base de profesionales esté consolidada.",feat_t:"Profesionales destacados",back:"Volver",book_t:"Solicitar servicio",f_service:"Servicio",f_date:"Día",f_time:"Hora",f_hours:"Horas estimadas",f_addr:"Dirección / zona",addr_ph:"Calle y número, ciudad",f_notes:"Detalles para el profesional",book_send:"Enviar solicitud",book_note:"Sin pago por adelantado en esta versión de prueba: el profesional confirma y acordáis el pago dentro de la app.",reqs_t:"Mis solicitudes",reqs_s:"Aquí ves el estado de cada servicio que has pedido.",plans_t:"Planes «Hogar al día»",plans_s:"Suscripción mensual con servicios combinados. Precios de ejemplo, editables.",prof_t:"Mi perfil",as_client:"Como cliente",client_note:"Reserva servicios desde Inicio. Tus solicitudes quedan guardadas en «Solicitudes».",see_plans:"Ver planes «Hogar al día»",as_pro:"Como profesional",pro_note:"Completa tu perfil y aparecerás en el listado de tu categoría. Comisión de lanzamiento: 12 % solo si entra un servicio pagado.",f_name:"Nombre",f_cat:"Categoría",f_sub:"Servicio principal",f_price:"Precio por hora (€)",f_city:"Ciudad / zona",f_bio:"Sobre ti",save_pro:"Guardar y publicar mi perfil",del_pro:"Eliminar mi perfil de profesional",n_home:"Inicio",n_reqs:"Solicitudes",n_plans:"Planes",n_prof:"Mi perfil",all_cities:"Todas las zonas",pros:"profesionales",per_h:"€/hora",verified:"Verificado",jobs:"trabajos",request:"Solicitar",soon:"Próximamente",all:"Todos",no_pros:"Aún no hay profesionales en esta zona. Prueba con «Todas las zonas».",no_reqs:"Todavía no has pedido ningún servicio.",pending:"Pendiente",cancel:"Cancelar",cancelled:"Cancelada",est_total:"Total estimado",with_pro:"Con",sent_ok:"Solicitud enviada. El profesional la verá al momento.",pro_saved:"Perfil publicado. Ya apareces en tu categoría.",pro_deleted:"Perfil de profesional eliminado.",fill_name:"Escribe tu nombre para publicar el perfil.",choose_plan:"Quiero este plan",plan_ok:"Plan anotado. Te contactaremos para activarlo (demo).",reviews:"Valoraciones recientes"},
+fr:{hero_t:"Votre maison, réglée en 3 touches",hero_s:"Des professionnels vérifiés pour le ménage, les courses, les réparations et les animaux, près de chez vous au Luxembourg.",need:"J'ai besoin d'un service",need_s:"Trouvez et réservez un professionnel",offer:"Je propose des services",offer_s:"Créez votre profil et recevez des clients",search_ph:"Que vous faut-il ? Ex. : ménage, monter un meuble…",cats_t:"Services fondamentaux",cats_s:"Quatre catégories claires pour démarrer : haute fréquence, qualité contrôlée, clients fidèles.",phase2_t:"Phase 2 · Bientôt",phase2_s:"Activés une fois la base de professionnels consolidée.",feat_t:"Professionnels en vedette",back:"Retour",book_t:"Demander le service",f_service:"Service",f_date:"Jour",f_time:"Heure",f_hours:"Heures estimées",f_addr:"Adresse / zone",addr_ph:"Rue et numéro, ville",f_notes:"Détails pour le professionnel",book_send:"Envoyer la demande",book_note:"Pas de paiement à l'avance dans cette version d'essai : le professionnel confirme et vous réglez le paiement dans l'app.",reqs_t:"Mes demandes",reqs_s:"Suivez ici l'état de chaque service demandé.",plans_t:"Formules « Maison au jour le jour »",plans_s:"Abonnement mensuel combinant plusieurs services. Prix indicatifs, modifiables.",prof_t:"Mon profil",as_client:"En tant que client",client_note:"Réservez depuis l'accueil. Vos demandes sont gardées dans « Demandes ».",see_plans:"Voir les formules",as_pro:"En tant que professionnel",pro_note:"Complétez votre profil pour apparaître dans votre catégorie. Commission de lancement : 12 % uniquement si un service payé entre.",f_name:"Nom",f_cat:"Catégorie",f_sub:"Service principal",f_price:"Prix par heure (€)",f_city:"Ville / zone",f_bio:"À propos de vous",save_pro:"Enregistrer et publier mon profil",del_pro:"Supprimer mon profil professionnel",n_home:"Accueil",n_reqs:"Demandes",n_plans:"Formules",n_prof:"Profil",all_cities:"Toutes les zones",pros:"professionnels",per_h:"€/heure",verified:"Vérifié",jobs:"missions",request:"Demander",soon:"Bientôt",all:"Tous",no_pros:"Pas encore de professionnels dans cette zone. Essayez « Toutes les zones ».",no_reqs:"Vous n'avez encore demandé aucun service.",pending:"En attente",cancel:"Annuler",cancelled:"Annulée",est_total:"Total estimé",with_pro:"Avec",sent_ok:"Demande envoyée. Le professionnel la voit tout de suite.",pro_saved:"Profil publié. Vous apparaissez dans votre catégorie.",pro_deleted:"Profil professionnel supprimé.",fill_name:"Écrivez votre nom pour publier le profil.",choose_plan:"Je veux cette formule",plan_ok:"Formule notée. Nous vous contacterons pour l'activer (démo).",reviews:"Avis récents"},
+en:{hero_t:"Your home, sorted in 3 taps",hero_s:"Verified professionals for cleaning, shopping, repairs and pets, near you in Luxembourg.",need:"I need a service",need_s:"Find and book a professional",offer:"I offer services",offer_s:"Create your profile and get clients",search_ph:"What do you need? E.g. cleaning, furniture assembly…",cats_t:"Core services",cats_s:"Four clear categories to launch: high frequency, controlled quality, repeat clients.",phase2_t:"Phase 2 · Coming soon",phase2_s:"Activated once the professional base is consolidated.",feat_t:"Featured professionals",back:"Back",book_t:"Request service",f_service:"Service",f_date:"Day",f_time:"Time",f_hours:"Estimated hours",f_addr:"Address / area",addr_ph:"Street and number, city",f_notes:"Details for the professional",book_send:"Send request",book_note:"No upfront payment in this trial version: the professional confirms and you arrange payment inside the app.",reqs_t:"My requests",reqs_s:"Track the status of every service you have requested.",plans_t:"“Home Sorted” plans",plans_s:"Monthly subscription combining services. Sample prices, editable.",prof_t:"My profile",as_client:"As a client",client_note:"Book services from Home. Your requests are stored under “Requests”.",see_plans:"See the plans",as_pro:"As a professional",pro_note:"Complete your profile to appear in your category. Launch commission: 12% only when a paid service comes in.",f_name:"Name",f_cat:"Category",f_sub:"Main service",f_price:"Price per hour (€)",f_city:"City / area",f_bio:"About you",save_pro:"Save and publish my profile",del_pro:"Delete my professional profile",n_home:"Home",n_reqs:"Requests",n_plans:"Plans",n_prof:"Profile",all_cities:"All areas",pros:"professionals",per_h:"€/hour",verified:"Verified",jobs:"jobs",request:"Request",soon:"Coming soon",all:"All",no_pros:"No professionals in this area yet. Try “All areas”.",no_reqs:"You haven't requested any service yet.",pending:"Pending",cancel:"Cancel",cancelled:"Cancelled",est_total:"Estimated total",with_pro:"With",sent_ok:"Request sent. The professional sees it right away.",pro_saved:"Profile published. You now appear in your category.",pro_deleted:"Professional profile deleted.",fill_name:"Enter your name to publish the profile.",choose_plan:"I want this plan",plan_ok:"Plan noted. We'll contact you to activate it (demo).",reviews:"Recent reviews"}
 };
 
 const CATS = [
- {id:"limpieza", ic:"🧹", phase:1,
+ {id:"limpieza", ic:"broom", phase:1,
   name:{es:"Limpieza y mantenimiento", fr:"Ménage et entretien", en:"Cleaning & home care"},
   desc:{es:"Limpieza recurrente, profunda y cuidado de textiles.", fr:"Ménage récurrent, grand nettoyage et textiles.", en:"Recurring and deep cleaning, laundry and ironing."},
   subs:{es:["Limpieza estándar recurrente","Limpieza profunda / mudanza","Colada y planchado a domicilio","Tintorería y textiles"], fr:["Ménage standard récurrent","Grand nettoyage / déménagement","Lessive et repassage à domicile","Pressing et textiles"], en:["Recurring standard cleaning","Deep cleaning / move-out","Home laundry & ironing","Dry cleaning & textiles"]}},
- {id:"compras", ic:"🛒", phase:1,
+ {id:"compras", ic:"basket", phase:1,
   name:{es:"Compras y abastecimiento", fr:"Courses et approvisionnement", en:"Shopping & supplies"},
   desc:{es:"Supermercado a domicilio y reposición programada de despensa.", fr:"Supermarché à domicile et réassort programmé.", en:"Scheduled grocery delivery and pantry restocking."},
   subs:{es:["Compra de supermercado","Personal shopper","Reposición programada de despensa","Productos de limpieza y baño"], fr:["Courses de supermarché","Personal shopper","Réassort programmé du garde-manger","Produits d'entretien et de toilette"], en:["Grocery shopping","Personal shopper","Scheduled pantry restocking","Cleaning & bathroom supplies"]}},
- {id:"manitas", ic:"🔧", phase:1,
+ {id:"manitas", ic:"wrench", phase:1,
   name:{es:"Manitas y reparaciones", fr:"Bricolage et réparations", en:"Handyman & small repairs"},
   desc:{es:"Montaje de muebles, fontanería y electricidad rápidas.", fr:"Montage de meubles, plomberie et électricité rapides.", en:"Furniture assembly, quick plumbing and electrics."},
   subs:{es:["Montaje de muebles e instalaciones","Fontanería menor (grifos, fugas)","Electricidad rápida (enchufes, lámparas)","Cerrajería y pequeños arreglos"], fr:["Montage de meubles et installations","Petite plomberie (robinets, fuites)","Électricité rapide (prises, lampes)","Serrurerie et petits dépannages"], en:["Furniture assembly & mounting","Minor plumbing (taps, leaks)","Quick electrics (sockets, lamps)","Locksmith & small fixes"]}},
- {id:"mascotas", ic:"🐾", phase:1,
+ {id:"mascotas", ic:"paw", phase:1,
   name:{es:"Cuidado de mascotas", fr:"Animaux de compagnie", en:"Pet care"},
   desc:{es:"Paseos, visitas a domicilio y peluquería canina en casa.", fr:"Promenades, visites à domicile et toilettage.", en:"Dog walking, home visits and grooming at home."},
   subs:{es:["Paseo de perros","Visitas a domicilio (gatos y mascotas)","Peluquería canina a domicilio","Cuidado en vacaciones"], fr:["Promenade de chiens","Visites à domicile (chats et animaux)","Toilettage à domicile","Garde pendant les vacances"], en:["Dog walking","Home visits (cats & pets)","At-home dog grooming","Holiday pet sitting"]}},
- {id:"tecnico", ic:"❄️", phase:2,
+ {id:"tecnico", ic:"snow", phase:2,
   name:{es:"Instalaciones técnicas", fr:"Installations techniques", en:"Technical installations"},
   desc:{es:"Aire acondicionado, climatización, pintura y aislamiento.", fr:"Climatisation, peinture et isolation.", en:"Air conditioning, painting and insulation."},
   subs:{es:["Limpieza y revisión de aire acondicionado","Pintura de interiores","Aislamiento"], fr:["Nettoyage et révision de climatisation","Peinture d'intérieur","Isolation"], en:["AC cleaning & servicing","Interior painting","Insulation"]}},
- {id:"jardin", ic:"🌿", phase:2,
+ {id:"jardin", ic:"leaf", phase:2,
   name:{es:"Jardinería y exteriores", fr:"Jardinage et extérieurs", en:"Gardening & outdoors"},
   desc:{es:"Terrazas, plantas de interior y jardines.", fr:"Terrasses, plantes d'intérieur et jardins.", en:"Terraces, indoor plants and gardens."},
   subs:{es:["Mantenimiento de jardín","Terrazas y balcones","Plantas de interior"], fr:["Entretien de jardin","Terrasses et balcons","Plantes d'intérieur"], en:["Garden maintenance","Terraces & balconies","Indoor plants"]}},
- {id:"orden", ic:"🗄️", phase:2,
+ {id:"orden", ic:"wardrobe", phase:2,
   name:{es:"Organización de espacios", fr:"Organisation d'espaces", en:"Home organisation"},
   desc:{es:"Orden profesional de armarios, cocina y trasteros.", fr:"Rangement professionnel : armoires, cuisine, débarras.", en:"Professional organising for wardrobes, kitchen and storage."},
   subs:{es:["Organización de armarios","Orden de cocina y trasteros","Home staging"], fr:["Organisation d'armoires","Rangement cuisine et débarras","Home staging"], en:["Wardrobe organisation","Kitchen & storage tidying","Home staging"]}}
@@ -248,18 +303,18 @@ const CATS = [
 const CITIES = ["Luxembourg","Leudelange","Esch-sur-Alzette","Strassen","Bertrange","Mersch","Differdange","Dudelange","Ettelbruck","Sanem"];
 
 const SEED_PROS = [
- {id:"s1", name:"María Fernanda López", cat:"limpieza", sub:0, price:22, city:"Luxembourg", rating:4.9, jobs:132, av:"👩🏽", verified:true, bio:{es:"Limpieza recurrente y profunda. Productos propios, referencias en Kirchberg y Limpertsberg.", fr:"Ménage récurrent et grand nettoyage. Produits fournis, références à Kirchberg et Limpertsberg.", en:"Recurring and deep cleaning. Own products, references in Kirchberg and Limpertsberg."}},
- {id:"s2", name:"Ana Paula Ribeiro", cat:"limpieza", sub:1, price:25, city:"Esch-sur-Alzette", rating:4.8, jobs:86, av:"👩🏻", verified:true, bio:{es:"Especialista en limpiezas profundas de mudanza y fin de obra. Equipo de 2 personas.", fr:"Spécialiste des grands nettoyages de déménagement et fin de chantier. Équipe de 2.", en:"Deep cleaning specialist for moves and end-of-works. Team of 2."}},
- {id:"s3", name:"Rosa Jiménez", cat:"limpieza", sub:2, price:18, city:"Leudelange", rating:5.0, jobs:210, av:"👩🏼", verified:true, bio:{es:"Colada, planchado y cuidado de ropa delicada a domicilio, con recogida y entrega.", fr:"Lessive, repassage et soin du linge délicat à domicile, collecte et livraison.", en:"Laundry, ironing and delicate garment care at home, pick-up and delivery."}},
- {id:"s4", name:"Kevin Meyer", cat:"compras", sub:0, price:16, city:"Luxembourg", rating:4.7, jobs:64, av:"🧑🏻", verified:true, bio:{es:"Compras de supermercado con entrega el mismo día. Cactus, Auchan y delhaize.", fr:"Courses de supermarché livrées le jour même. Cactus, Auchan et delhaize.", en:"Grocery shopping with same-day delivery. Cactus, Auchan and delhaize."}},
- {id:"s5", name:"Lucía Ferrer", cat:"compras", sub:2, price:15, city:"Strassen", rating:4.9, jobs:48, av:"👩🏻", verified:false, bio:{es:"Reposición programada de despensa y esenciales: tú haces la lista una vez, yo me encargo cada semana.", fr:"Réassort programmé du garde-manger : vous faites la liste une fois, je m'en occupe chaque semaine.", en:"Scheduled pantry restocking: make the list once, I handle it every week."}},
- {id:"s6", name:"Tomás Weber", cat:"manitas", sub:0, price:38, city:"Luxembourg", rating:4.9, jobs:173, av:"👨🏻", verified:true, bio:{es:"Montaje de muebles, soportes de TV, cortinas y estanterías. Herramientas propias.", fr:"Montage de meubles, supports TV, rideaux et étagères. Outils fournis.", en:"Furniture assembly, TV mounts, curtains and shelves. Own tools."}},
- {id:"s7", name:"André Silva", cat:"manitas", sub:1, price:42, city:"Differdange", rating:4.8, jobs:97, av:"👨🏽", verified:true, bio:{es:"Fontanería menor: grifos, cisternas, pequeñas fugas. Intervención rápida el mismo día.", fr:"Petite plomberie : robinets, chasses d'eau, petites fuites. Intervention rapide le jour même.", en:"Minor plumbing: taps, cisterns, small leaks. Fast same-day call-outs."}},
- {id:"s8", name:"Marc Hoffmann", cat:"manitas", sub:2, price:40, city:"Bertrange", rating:4.7, jobs:58, av:"👨🏼", verified:false, bio:{es:"Electricidad rápida: enchufes, lámparas, interruptores y pequeños arreglos en casa.", fr:"Électricité rapide : prises, lampes, interrupteurs et petit dépannage.", en:"Quick electrics: sockets, lamps, switches and small home fixes."}},
- {id:"s9", name:"Sofía Martens", cat:"mascotas", sub:0, price:14, city:"Luxembourg", rating:5.0, jobs:240, av:"👩🏼", verified:true, bio:{es:"Paseos diarios en Kirchberg y el bosque de Bambësch. Fotos en cada paseo.", fr:"Promenades quotidiennes à Kirchberg et dans la forêt de Bambësch. Photos à chaque sortie.", en:"Daily walks in Kirchberg and the Bambësch forest. Photos on every walk."}},
- {id:"s10", name:"Léa Petit", cat:"mascotas", sub:1, price:13, city:"Mersch", rating:4.9, jobs:77, av:"👩🏻", verified:true, bio:{es:"Visitas a domicilio para gatos durante tus ausencias: comida, arena, juegos y reporte diario.", fr:"Visites à domicile pour chats pendant vos absences : nourriture, litière, jeux et rapport quotidien.", en:"Home visits for cats while you're away: food, litter, play and a daily report."}},
- {id:"s11", name:"Nico Wagner", cat:"mascotas", sub:2, price:28, city:"Esch-sur-Alzette", rating:4.8, jobs:41, av:"🧑🏼", verified:false, bio:{es:"Peluquería canina a domicilio: baño, corte y uñas sin estrés para tu perro.", fr:"Toilettage canin à domicile : bain, coupe et griffes, sans stress pour votre chien.", en:"At-home dog grooming: bath, cut and nails, stress-free for your dog."}},
- {id:"s12", name:"Carmen Ruiz", cat:"limpieza", sub:0, price:20, city:"Dudelange", rating:4.8, jobs:119, av:"👩🏽", verified:true, bio:{es:"Limpieza semanal o quincenal con la misma persona siempre. Llaves con protocolo firmado.", fr:"Ménage hebdomadaire ou bimensuel, toujours la même personne. Clés avec protocole signé.", en:"Weekly or fortnightly cleaning, always the same person. Keys with a signed protocol."}}
+ {id:"s1", name:"María Fernanda López", cat:"limpieza", sub:0, price:22, city:"Luxembourg", rating:4.9, jobs:132, verified:true, bio:{es:"Limpieza recurrente y profunda. Productos propios, referencias en Kirchberg y Limpertsberg.", fr:"Ménage récurrent et grand nettoyage. Produits fournis, références à Kirchberg et Limpertsberg.", en:"Recurring and deep cleaning. Own products, references in Kirchberg and Limpertsberg."}},
+ {id:"s2", name:"Ana Paula Ribeiro", cat:"limpieza", sub:1, price:25, city:"Esch-sur-Alzette", rating:4.8, jobs:86, verified:true, bio:{es:"Especialista en limpiezas profundas de mudanza y fin de obra. Equipo de 2 personas.", fr:"Spécialiste des grands nettoyages de déménagement et fin de chantier. Équipe de 2.", en:"Deep cleaning specialist for moves and end-of-works. Team of 2."}},
+ {id:"s3", name:"Rosa Jiménez", cat:"limpieza", sub:2, price:18, city:"Leudelange", rating:5.0, jobs:210, verified:true, bio:{es:"Colada, planchado y cuidado de ropa delicada a domicilio, con recogida y entrega.", fr:"Lessive, repassage et soin du linge délicat à domicile, collecte et livraison.", en:"Laundry, ironing and delicate garment care at home, pick-up and delivery."}},
+ {id:"s4", name:"Kevin Meyer", cat:"compras", sub:0, price:16, city:"Luxembourg", rating:4.7, jobs:64, verified:true, bio:{es:"Compras de supermercado con entrega el mismo día. Cactus, Auchan y delhaize.", fr:"Courses de supermarché livrées le jour même. Cactus, Auchan et delhaize.", en:"Grocery shopping with same-day delivery. Cactus, Auchan and delhaize."}},
+ {id:"s5", name:"Lucía Ferrer", cat:"compras", sub:2, price:15, city:"Strassen", rating:4.9, jobs:48, verified:false, bio:{es:"Reposición programada de despensa y esenciales: tú haces la lista una vez, yo me encargo cada semana.", fr:"Réassort programmé du garde-manger : vous faites la liste une fois, je m'en occupe chaque semaine.", en:"Scheduled pantry restocking: make the list once, I handle it every week."}},
+ {id:"s6", name:"Tomás Weber", cat:"manitas", sub:0, price:38, city:"Luxembourg", rating:4.9, jobs:173, verified:true, bio:{es:"Montaje de muebles, soportes de TV, cortinas y estanterías. Herramientas propias.", fr:"Montage de meubles, supports TV, rideaux et étagères. Outils fournis.", en:"Furniture assembly, TV mounts, curtains and shelves. Own tools."}},
+ {id:"s7", name:"André Silva", cat:"manitas", sub:1, price:42, city:"Differdange", rating:4.8, jobs:97, verified:true, bio:{es:"Fontanería menor: grifos, cisternas, pequeñas fugas. Intervención rápida el mismo día.", fr:"Petite plomberie : robinets, chasses d'eau, petites fuites. Intervention rapide le jour même.", en:"Minor plumbing: taps, cisterns, small leaks. Fast same-day call-outs."}},
+ {id:"s8", name:"Marc Hoffmann", cat:"manitas", sub:2, price:40, city:"Bertrange", rating:4.7, jobs:58, verified:false, bio:{es:"Electricidad rápida: enchufes, lámparas, interruptores y pequeños arreglos en casa.", fr:"Électricité rapide : prises, lampes, interrupteurs et petit dépannage.", en:"Quick electrics: sockets, lamps, switches and small home fixes."}},
+ {id:"s9", name:"Sofía Martens", cat:"mascotas", sub:0, price:14, city:"Luxembourg", rating:5.0, jobs:240, verified:true, bio:{es:"Paseos diarios en Kirchberg y el bosque de Bambësch. Fotos en cada paseo.", fr:"Promenades quotidiennes à Kirchberg et dans la forêt de Bambësch. Photos à chaque sortie.", en:"Daily walks in Kirchberg and the Bambësch forest. Photos on every walk."}},
+ {id:"s10", name:"Léa Petit", cat:"mascotas", sub:1, price:13, city:"Mersch", rating:4.9, jobs:77, verified:true, bio:{es:"Visitas a domicilio para gatos durante tus ausencias: comida, arena, juegos y reporte diario.", fr:"Visites à domicile pour chats pendant vos absences : nourriture, litière, jeux et rapport quotidien.", en:"Home visits for cats while you're away: food, litter, play and a daily report."}},
+ {id:"s11", name:"Nico Wagner", cat:"mascotas", sub:2, price:28, city:"Esch-sur-Alzette", rating:4.8, jobs:41, verified:false, bio:{es:"Peluquería canina a domicilio: baño, corte y uñas sin estrés para tu perro.", fr:"Toilettage canin à domicile : bain, coupe et griffes, sans stress pour votre chien.", en:"At-home dog grooming: bath, cut and nails, stress-free for your dog."}},
+ {id:"s12", name:"Carmen Ruiz", cat:"limpieza", sub:0, price:20, city:"Dudelange", rating:4.8, jobs:119, verified:true, bio:{es:"Limpieza semanal o quincenal con la misma persona siempre. Llaves con protocolo firmado.", fr:"Ménage hebdomadaire ou bimensuel, toujours la même personne. Clés avec protocole signé.", en:"Weekly or fortnightly cleaning, always the same person. Keys with a signed protocol."}}
 ];
 
 const PLANS = [
@@ -286,6 +341,12 @@ function proCount(catId){ return allPros().filter(p=>p.cat===catId).length; }
 function save(){ localStorage.setItem("hg_reqs", JSON.stringify(S.reqs)); localStorage.setItem("hg_mypro", JSON.stringify(S.myPro)); localStorage.setItem("hg_lang", S.lang); localStorage.setItem("hg_role", S.role); }
 let toastTimer=null;
 function toast(msg){ const el=document.getElementById("toast"); el.textContent=msg; el.style.display="block"; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.style.display="none", 2800); }
+const I = (n, c) => `<svg class="icn ${c || ""}"><use href="#i-${n}"/></svg>`;
+const AVC = ["#0F766E", "#0B5B54", "#D97706", "#E4572E", "#476C9B", "#5F7161"];
+function avColor(name){ let h = 0; for (const ch of (name || "")) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return AVC[h % AVC.length]; }
+function initials(name){ const p = (name || "?").trim().split(/\s+/); return ((p[0][0] || "") + (p.length > 1 ? p[p.length - 1][0] : "")).toUpperCase(); }
+function avatarHTML(p, px){ const s = px || 54; return `<div class="avatar" style="width:${s}px;height:${s}px;font-size:${Math.round(s * .36)}px;--av:${avColor(p.name)}">${initials(p.name)}</div>`; }
+
 
 /* ---- navegación ---- */
 function go(scr){ S.prev = (scr==="pro"||scr==="book") ? S.screen : S.prev; S.screen = scr;
@@ -317,16 +378,16 @@ function fillCitySelects(){
   document.getElementById("p-city").innerHTML = CITIES.map(c=>`<option>${c}</option>`).join("");
 }
 function catCard(c){
-  if(c.phase===2) return `<button class="cat soon" onclick="toast('${t("soon")}')"><span class="soon-tag">${t("soon")}</span><div class="ic">${c.ic}</div><h3>${catName(c)}</h3><p>${catDesc(c)}</p></button>`;
-  return `<button class="cat" onclick="openCat('${c.id}')"><div class="ic">${c.ic}</div><h3>${catName(c)}</h3><p>${catDesc(c)}</p><span class="n">${proCount(c.id)} ${t("pros")}</span></button>`;
+  if(c.phase===2) return `<button class="cat soon" onclick="toast('${t("soon")}')"><span class="soon-tag">${t("soon")}</span><div class="tile amber">${I(c.ic)}</div><h3>${catName(c)}</h3><p>${catDesc(c)}</p></button>`;
+  return `<button class="cat" onclick="openCat('${c.id}')"><div class="tile">${I(c.ic)}</div><h3>${catName(c)}</h3><p>${catDesc(c)}</p><span class="n">${proCount(c.id)} ${t("pros")}</span></button>`;
 }
 function proCard(p){
   const c = CATS.find(x=>x.id===p.cat);
   return `<button class="pro" onclick="openPro('${p.id}')">
-    <div class="pro-head"><div class="avatar">${p.av}</div>
-      <div><h3>${p.name} ${p.verified?`<span class="verified">${t("verified")}</span>`:""}</h3>
-      <div class="meta"><span class="stars">★ ${p.rating.toFixed(1)}</span> · ${p.jobs} ${t("jobs")} · 📍 ${p.city}</div>
-      <div class="tags"><span class="tag">${c.ic} ${subName(c,p.sub)}</span></div></div>
+    <div class="pro-head">${avatarHTML(p)}
+      <div><h3>${p.name} ${p.verified?`<span class="verified">${I("shield","xs")}${t("verified")}</span>`:""}</h3>
+      <div class="meta"><span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> · ${p.jobs} ${t("jobs")} · ${I("pin","xs")} ${p.city}</div>
+      <div class="tags"><span class="tag">${I(c.ic,"xs")} ${subName(c,p.sub)}</span></div></div>
       <div class="price"><b>${p.price} €</b><small>${t("per_h")}</small></div>
     </div></button>`;
 }
@@ -345,7 +406,7 @@ function renderHome(){
 function openCat(id){ S.cat = CATS.find(c=>c.id===id); S.subFilter = -1; go("cat"); renderCat(); }
 function renderCat(){
   const c = S.cat; if(!c) return;
-  document.getElementById("cat-title").textContent = c.ic + " " + catName(c);
+  document.getElementById("cat-title").innerHTML = I(c.ic) + "<span>" + catName(c) + "</span>";
   document.getElementById("cat-desc").textContent = catDesc(c);
   const subs = (c.subs[S.lang] || c.subs.es);
   document.getElementById("cat-subs").innerHTML = `<button class="${S.subFilter===-1?'on':''}" onclick="setSub(-1)">${t("all")}</button>` + subs.map((s,i)=>`<button class="${S.subFilter===i?'on':''}" onclick="setSub(${i})">${s}</button>`).join("");
@@ -365,13 +426,13 @@ function renderPro(){
   const bio = (p.bio && (p.bio[S.lang] || p.bio.es)) || "";
   document.getElementById("pro-detail").innerHTML = `
     <div class="card">
-      <div class="pro-head"><div class="avatar" style="width:70px;height:70px;font-size:36px">${p.av}</div>
+      <div class="pro-head">${avatarHTML(p,70)}
         <div><h3 style="font-size:20px">${p.name}</h3>
-        <div class="meta"><span class="stars">★ ${p.rating.toFixed(1)}</span> · ${p.jobs} ${t("jobs")} · 📍 ${p.city}</div>
-        ${p.verified?`<div class="verified">${t("verified")}</div>`:""}</div>
+        <div class="meta"><span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> · ${p.jobs} ${t("jobs")} · ${I("pin","xs")} ${p.city}</div>
+        ${p.verified?`<div class="verified">${I("shield","xs")}${t("verified")}</div>`:""}</div>
         <div class="price"><b style="font-size:24px">${p.price} €</b><small>${t("per_h")}</small></div>
       </div>
-      <div class="tags" style="margin-top:12px"><span class="tag">${c.ic} ${catName(c)}</span><span class="tag">${subName(c,p.sub)}</span></div>
+      <div class="tags" style="margin-top:12px"><span class="tag">${I(c.ic,"xs")} ${catName(c)}</span><span class="tag">${subName(c,p.sub)}</span></div>
       <p style="margin:14px 0 4px">${bio}</p>
       <button class="btn" onclick="openBook()">${t("request")} · ${p.price} ${t("per_h")}</button>
     </div>`;
@@ -380,7 +441,7 @@ function renderPro(){
 /* ---- reserva ---- */
 function openBook(){
   const p = S.pro; const c = CATS.find(x=>x.id===p.cat);
-  document.getElementById("book-with").innerHTML = `<div class="pro-head" style="margin-bottom:12px"><div class="avatar">${p.av}</div><div><h3>${t("with_pro")} ${p.name}</h3><div class="meta">${c.ic} ${catName(c)} · 📍 ${p.city}</div></div></div>`;
+  document.getElementById("book-with").innerHTML = `<div class="pro-head" style="margin-bottom:12px">${avatarHTML(p)}<div><h3>${t("with_pro")} ${p.name}</h3><div class="meta">${I(c.ic,"xs")} ${catName(c)} · ${I("pin","xs")} ${p.city}</div></div></div>`;
   document.getElementById("b-service").innerHTML = (c.subs[S.lang]||c.subs.es).map((s,i)=>`<option value="${i}" ${i===p.sub?"selected":""}>${s}</option>`).join("");
   const d = new Date(); d.setDate(d.getDate()+1);
   document.getElementById("b-date").value = d.toISOString().slice(0,10);
@@ -393,7 +454,7 @@ function updTotal(){
 }
 function submitBooking(){
   const p = S.pro; const c = CATS.find(x=>x.id===p.cat);
-  const req = { id:"r"+Date.now(), proId:p.id, proName:p.name, av:p.av, cat:p.cat,
+  const req = { id:"r"+Date.now(), proId:p.id, proName:p.name, cat:p.cat,
     service: subName(c, parseInt(document.getElementById("b-service").value,10)),
     date: document.getElementById("b-date").value, time: document.getElementById("b-time").value,
     hours: document.getElementById("b-hours").value, addr: document.getElementById("b-addr").value,
@@ -405,10 +466,10 @@ function renderReqs(){
   const el = document.getElementById("req-list");
   if(!S.reqs.length){ el.innerHTML = `<div class="empty">${t("no_reqs")}</div>`; return; }
   el.innerHTML = S.reqs.map(r=>{ const c = CATS.find(x=>x.id===r.cat); return `<div class="card req">
-    <div class="ic">${c?c.ic:"🏠"}</div>
+    <div class="tile sm">${I(c?c.ic:"home")}</div>
     <div><h4>${r.service}</h4>
-    <p>${r.av} ${r.proName} · 📅 ${r.date} · 🕙 ${r.time} · ${r.hours} h · <b>${r.total} €</b></p>
-    ${r.addr?`<p>📍 ${r.addr}</p>`:""} ${r.notes?`<p>📝 ${r.notes}</p>`:""}
+    <p>${r.proName} · ${I("cal","xs")} ${r.date} · ${I("clock","xs")} ${r.time} · ${r.hours} h · <b>${r.total} €</b></p>
+    ${r.addr?`<p>${I("pin","xs")} ${r.addr}</p>`:""} ${r.notes?`<p>${I("note","xs")} ${r.notes}</p>`:""}
     ${r.status==="pending"?`<button class="btn warn" style="margin-top:8px;padding:9px" onclick="cancelReq('${r.id}')">${t("cancel")}</button>`:""}
     </div>
     <span class="pill ${r.status==="pending"?"":"off"}">${r.status==="pending"?t("pending"):t("cancelled")}</span>
@@ -419,14 +480,14 @@ function cancelReq(id){ const r = S.reqs.find(x=>x.id===id); if(r){ r.status="ca
 /* ---- planes ---- */
 function renderPlans(){
   document.getElementById("plan-list").innerHTML = PLANS.map((pl,i)=>`<div class="plan ${pl.hot?"hot":""}">
-    <h3>${pl.name} ${pl.hot?"⭐":""}</h3><div class="p-price">${pl.price} €<small style="font-size:13px;color:var(--mut)"> /mes</small></div>
+    <h3>${pl.name} ${pl.hot?I("star","sm fill"):""}</h3><div class="p-price">${pl.price} €<small style="font-size:13px;color:var(--mut)"> /mes</small></div>
     <ul>${(pl.items[S.lang]||pl.items.es).map(x=>`<li>${x}</li>`).join("")}</ul>
     <button class="btn ${pl.hot?"":"sec"}" onclick="toast('${t("plan_ok")}')">${t("choose_plan")}</button></div>`).join("");
 }
 
 /* ---- perfil profesional ---- */
 function fillProCats(){
-  document.getElementById("p-cat").innerHTML = CATS.filter(c=>c.phase===1).map(c=>`<option value="${c.id}">${c.ic} ${catName(c)}</option>`).join("");
+  document.getElementById("p-cat").innerHTML = CATS.filter(c=>c.phase===1).map(c=>`<option value="${c.id}">${catName(c)}</option>`).join("");
   fillProSubs(); fillProForm();
 }
 function fillProSubs(){
@@ -450,7 +511,7 @@ function savePro(){
   S.myPro = { id:"mine", name, cat: document.getElementById("p-cat").value,
     sub: parseInt(document.getElementById("p-sub").value,10),
     price: Math.max(8, Math.min(120, parseInt(document.getElementById("p-price").value,10) || 25)),
-    city: document.getElementById("p-city").value, rating: 5.0, jobs: 0, av:"🧑🏽", verified:false,
+    city: document.getElementById("p-city").value, rating: 5.0, jobs: 0, verified:false,
     bio:{es:bioTxt, fr:bioTxt, en:bioTxt} };
   save(); document.getElementById("p-del").style.display="block";
   toast(t("pro_saved")); openCat(S.myPro.cat);
