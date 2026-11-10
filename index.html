@@ -139,6 +139,33 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
 .stamp{position:absolute;top:16px;padding:6px 12px;border-radius:10px;font-weight:800;font-size:14px;letter-spacing:.4px;opacity:0;pointer-events:none;border:2px solid;z-index:2}
 .stamp.no{right:16px;color:#C2410C;border-color:#C2410C;transform:rotate(10deg)}
 .stamp.yes{left:16px;color:var(--teal-d);border-color:var(--teal-d);transform:rotate(-10deg)}
+
+/* ===== modo Booksy: servicios con precio/duración, días y horas, reseñas ===== */
+.sub-t{font-size:16px;font-weight:800;margin:16px 0 4px}
+.svc{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.svc:last-child{border-bottom:none;padding-bottom:2px}
+.svc .nm{font-weight:700;font-size:15px}
+.svc .dur{color:var(--mut);font-size:13px;margin-top:1px}
+.svc .pr{margin-left:auto;text-align:right;flex:none}
+.svc .pr b{font-size:16px;color:var(--teal)}
+.mini{flex:none;border:2px solid var(--teal);background:#fff;color:var(--teal);border-radius:999px;padding:8px 15px;font-weight:800;font-size:13px}
+.days{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day{flex:none;width:56px;border:1px solid var(--line);background:#fff;border-radius:13px;padding:8px 0 7px;text-align:center;color:var(--ink)}
+.day span{display:block}
+.day .dw{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--mut)}
+.day .dn{font-size:19px;font-weight:800;line-height:1.15}
+.day .dm{font-size:11px;color:var(--mut)}
+.day.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.day.on .dw,.day.on .dm{color:rgba(255,255,255,.85)}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.slot{border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px 0;font-weight:700;font-size:14px;color:var(--ink)}
+.slot.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.slot:disabled{opacity:.30;text-decoration:line-through}
+.rev{padding:11px 0;border-bottom:1px solid var(--line)}
+.rev:last-child{border-bottom:none;padding-bottom:2px}
+.rev-h{display:flex;align-items:center;gap:8px}
+.rev-h .note{margin-left:auto}
 </style>
 </head>
 <body>
@@ -230,18 +257,17 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
 
   <!-- BOOKING -->
   <section id="scr-book" class="screen">
-    <button class="back" onclick="go('pro')"><svg class="icn"><use href="#i-arrow"/></svg><span data-i="back">Volver</span></button>
-    <h2 class="sec-t" data-i="book_t">Solicitar servicio</h2>
+    <button class="back" onclick="bookBack()"><svg class="icn"><use href="#i-arrow"/></svg><span data-i="back">Volver</span></button>
+    <h2 class="sec-t" id="book-title">Reservar cita</h2>
     <div class="card">
       <div id="book-with"></div>
-      <div class="field"><label data-i="f_service">Servicio</label><select id="b-service"></select></div>
-      <div class="field"><label data-i="f_date">Día</label><input id="b-date" type="date"></div>
-      <div class="field"><label data-i="f_time">Hora</label><input id="b-time" type="time" value="10:00"></div>
-      <div class="field"><label data-i="f_hours">Horas estimadas</label><select id="b-hours"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>6</option><option>8</option></select></div>
-      <div class="field"><label data-i="f_addr">Dirección / zona</label><input id="b-addr" type="text" data-i-ph="addr_ph" placeholder="Calle y número, ciudad"></div>
+      <div class="field"><label data-i="f_service">Servicio</label><select id="b-service" onchange="pickService()"></select></div>
+      <div class="field"><label data-i="f_date">Día</label><div class="days" id="b-days"></div></div>
+      <div class="field"><label data-i="f_time">Hora</label><div class="slots" id="b-slots"></div></div>
+      <div class="field"><label data-i="f_addr">Dirección / zona</label><input id="b-addr" type="text" data-i-ph="addr_ph" placeholder="Calle y número, ciudad" oninput="updBookSummary()"></div>
       <div class="field"><label data-i="f_notes">Detalles para el profesional</label><textarea id="b-notes" rows="3"></textarea></div>
       <div class="fee" id="b-total"></div>
-      <button class="btn" onclick="submitBooking()" data-i="book_send">Enviar solicitud</button>
+      <button class="btn" id="b-send" onclick="submitBooking()">Confirmar cita</button>
       <p class="note" data-i="book_note">Pago seguro con tarjeta (Stripe): el importe queda retenido por HogarGo y se libera al profesional cuando el servicio se realiza. El pago se realiza con tarjeta a través de Stripe.</p>
     </div>
   </section>
@@ -295,7 +321,7 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
     </div>
     <div class="card">
       <h3 style="margin-top:0" data-i="del_all_t">Eliminar mis datos</h3>
-      <p class="note" data-i="del_all_s">Borra de este dispositivo tu registro de cliente, tu perfil de profesional, tus solicitudes y tus planes. Para eliminar también los registros de pago del servidor, usa la página de eliminación de cuenta.</p>
+      <p class="note" data-i="del_all_s">Borra de este dispositivo tu registro de cliente, tu perfil de profesional, tus citas y tus planes. Para eliminar también los registros de pago del servidor, usa la página de eliminación de cuenta.</p>
       <button class="btn ghost" onclick="deleteAll()" data-i="del_all_b">Eliminar todos mis datos</button>
     </div>
     <p class="note" style="text-align:center;margin-top:14px"><a href="privacidad.html" data-i="legal_p">Privacidad</a> · <a href="terminos.html" data-i="legal_t">Condiciones de uso</a> · <a href="eliminar-cuenta.html" data-i="legal_d">Eliminar mi cuenta</a></p>
@@ -314,9 +340,9 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
 <script>
 /* ============ HogarGo v1 — prototipo funcional (datos demo + localStorage) ============ */
 const I18N = {
-es:{hero_t:"Tu hogar, resuelto en 3 toques",hero_s:"Profesionales verificados de limpieza, compras, reparaciones y mascotas, cerca de ti en Luxemburgo.",need:"Necesito un servicio",need_s:"Encuentra y reserva un profesional",offer:"Ofrezco servicios",offer_s:"Crea tu perfil y recibe clientes",search_ph:"¿Qué necesitas? Ej.: limpieza, montar un mueble…",cats_t:"Servicios fundamentales",cats_s:"Cuatro categorías claras para empezar: alta frecuencia, calidad controlada y clientes que repiten.",phase2_t:"Fase 2 · Muy pronto",phase2_s:"Se activan cuando la base de profesionales esté consolidada.",feat_t:"Profesionales destacados",back:"Volver",book_t:"Solicitar servicio",f_service:"Servicio",f_date:"Día",f_time:"Hora",f_hours:"Horas estimadas",f_addr:"Dirección / zona",addr_ph:"Calle y número, ciudad",f_notes:"Detalles para el profesional",book_send:"Enviar solicitud",book_note:"Pago seguro con tarjeta (Stripe): el importe queda retenido por HogarGo y se libera al profesional cuando el servicio se realiza. El pago se realiza con tarjeta a través de Stripe.",reqs_t:"Mis solicitudes",reqs_s:"Aquí ves el estado de cada servicio que has pedido.",plans_t:"Planes «Hogar al día»",plans_s:"Suscripción mensual con servicios combinados. Precios de ejemplo, editables.",prof_t:"Mi perfil",as_client:"Como cliente",client_note:"Reserva servicios desde Inicio. Tus solicitudes quedan guardadas en «Solicitudes».",see_plans:"Ver planes «Hogar al día»",as_pro:"Como profesional",pro_note:"Completa tu perfil y aparecerás en el listado de tu categoría. Comisión del 15 % por servicio pagado (mínimo 5 €): el cliente paga tu precio, sin recargo; el resto es tuyo.",f_name:"Nombre",f_cat:"Categoría",f_sub:"Servicio principal",f_price:"Precio por hora (€)",f_city:"Ciudad / zona",f_bio:"Sobre ti",save_pro:"Guardar y publicar mi perfil",del_pro:"Eliminar mi perfil de profesional",n_home:"Inicio",n_reqs:"Solicitudes",n_plans:"Planes",n_prof:"Mi perfil",all_cities:"Todas las zonas",pros:"profesionales",per_h:"€/hora",verified:"Verificado",jobs:"trabajos",request:"Solicitar",soon:"Próximamente",all:"Todos",no_pros:"Aún no hay profesionales en esta zona. Prueba con «Todas las zonas».",no_reqs:"Todavía no has pedido ningún servicio.",pending:"Pendiente",cancel:"Cancelar",cancelled:"Cancelada",est_total:"Total estimado",with_pro:"Con",sent_ok:"Solicitud enviada. El profesional la verá al momento.",pro_saved:"Perfil publicado. Ya apareces en tu categoría.",pro_deleted:"Perfil de profesional eliminado.",fill_name:"Escribe tu nombre para publicar el perfil.",choose_plan:"Quiero este plan",plan_ok:"Plan anotado. Te contactaremos para activarlo.",reg_t:"Registro de cliente",reg_s:"Tu dirección es obligatoria: cuando hagas match, el profesional sabrá dónde tiene que ir.",f_phone:"Teléfono",f_street:"Dirección (calle y número)",f_zip:"Código postal",save_reg:"Guardar mi registro",reg_ok:"Registro guardado. Ya puedes hacer match.",reg_need:"Primero registra tu dirección: el profesional necesita saber dónde ir.",will_go:"El profesional irá a",match_start:"Buscar con match",match_end:"Has visto a todos los profesionales",match_end_s:"Puedes ver la lista completa o volver a empezar el match.",match_list:"Ver la lista",match_restart:"Repetir el match",match_pass:"Descartar",match_pick:"Seleccionar",swipe_hint:"Desliza a la derecha para seleccionar y a la izquierda para descartar, o usa los botones",of:"de",fee_l:"Comisión HogarGo (15 %, mín. 5 €)",net_l:"El profesional recibe",held:"Pago retenido por HogarGo hasta que el servicio se realiza.",payouts_t:"Cobros",payouts_s:"Recibes el importe del servicio menos la comisión del 15 % (mínimo 5 € por servicio). El pago del cliente queda retenido por HogarGo y se te transfiere cuando el servicio se realiza.",payouts_b:"Activar cobros con Stripe",payouts_demo:"Si el botón no responde, revisa tu conexión e inténtalo de nuevo.",guide:"Tarifa de mercado en Luxemburgo",reviews:"Valoraciones recientes",del_all_t:"Eliminar mis datos",del_all_s:"Borra de este dispositivo tu registro de cliente, tu perfil de profesional, tus solicitudes y tus planes. Para eliminar también los registros de pago del servidor, usa la página de eliminación de cuenta.",del_all_b:"Eliminar todos mis datos",del_all_q:"¿Seguro? Se borrarán tu registro de cliente, tu perfil de profesional, tus solicitudes y tus planes de este dispositivo. No se puede deshacer.",del_all_ok:"Datos eliminados. Este dispositivo ha quedado limpio.",pay_held_l:"Pago retenido por HogarGo: se liberará al profesional cuando confirmes que el servicio se ha realizado.",pay_done_b:"Confirmar servicio realizado y liberar el pago",pay_done_q:"¿Confirmas que el servicio ya se ha realizado? Se liberará el importe neto al profesional. Esta acción no se puede deshacer.",pay_released_l:"Pago liberado al profesional.",pay_done_ok:"Pago liberado. El profesional ha recibido su importe.",pay_nopro:"El profesional aún no ha activado sus cobros en Stripe: el importe sigue retenido y seguro hasta que los active.",pay_err:"No se pudo completar la operación de pago. El importe sigue retenido; inténtalo de nuevo.",pay_ok_t:"Pago confirmado: el importe queda retenido por HogarGo hasta que confirmes el servicio.",pay_cancel_t:"El pago no se completó: la solicitud queda sin pagar. Puedes reintentarlo desde «Solicitudes».",pay_now_b:"Pagar ahora",pay_unpaid_l:"Pago pendiente de completar.",legal_p:"Privacidad",legal_t:"Condiciones de uso",legal_d:"Eliminar mi cuenta"},
-fr:{hero_t:"Votre maison, réglée en 3 touches",hero_s:"Des professionnels vérifiés pour le ménage, les courses, les réparations et les animaux, près de chez vous au Luxembourg.",need:"J'ai besoin d'un service",need_s:"Trouvez et réservez un professionnel",offer:"Je propose des services",offer_s:"Créez votre profil et recevez des clients",search_ph:"Que vous faut-il ? Ex. : ménage, monter un meuble…",cats_t:"Services fondamentaux",cats_s:"Quatre catégories claires pour démarrer : haute fréquence, qualité contrôlée, clients fidèles.",phase2_t:"Phase 2 · Bientôt",phase2_s:"Activés une fois la base de professionnels consolidée.",feat_t:"Professionnels en vedette",back:"Retour",book_t:"Demander le service",f_service:"Service",f_date:"Jour",f_time:"Heure",f_hours:"Heures estimées",f_addr:"Adresse / zone",addr_ph:"Rue et numéro, ville",f_notes:"Détails pour le professionnel",book_send:"Envoyer la demande",book_note:"Paiement sécurisé par carte (Stripe) : le montant est retenu par HogarGo et libéré au professionnel une fois le service réalisé. Le paiement s'effectue par carte via Stripe.",reqs_t:"Mes demandes",reqs_s:"Suivez ici l'état de chaque service demandé.",plans_t:"Formules « Hogar au quotidien »",plans_s:"Abonnement mensuel combinant plusieurs services. Prix indicatifs, modifiables.",prof_t:"Mon profil",as_client:"En tant que client",client_note:"Réservez depuis l'accueil. Vos demandes sont gardées dans « Demandes ».",see_plans:"Voir les formules",as_pro:"En tant que professionnel",pro_note:"Complétez votre profil pour apparaître dans votre catégorie. Commission de 15 % par service payé (minimum 5 €) : le client paie votre prix, sans supplément ; le reste est pour vous.",f_name:"Nom",f_cat:"Catégorie",f_sub:"Service principal",f_price:"Prix par heure (€)",f_city:"Ville / zone",f_bio:"À propos de vous",save_pro:"Enregistrer et publier mon profil",del_pro:"Supprimer mon profil professionnel",n_home:"Accueil",n_reqs:"Demandes",n_plans:"Formules",n_prof:"Profil",all_cities:"Toutes les zones",pros:"professionnels",per_h:"€/heure",verified:"Vérifié",jobs:"missions",request:"Demander",soon:"Bientôt",all:"Tous",no_pros:"Pas encore de professionnels dans cette zone. Essayez « Toutes les zones ».",no_reqs:"Vous n'avez encore demandé aucun service.",pending:"En attente",cancel:"Annuler",cancelled:"Annulée",est_total:"Total estimé",with_pro:"Avec",sent_ok:"Demande envoyée. Le professionnel la voit tout de suite.",pro_saved:"Profil publié. Vous apparaissez dans votre catégorie.",pro_deleted:"Profil professionnel supprimé.",fill_name:"Écrivez votre nom pour publier le profil.",choose_plan:"Je veux cette formule",plan_ok:"Formule notée. Nous vous contacterons pour l'activer (démo).",reg_t:"Inscription client",reg_s:"Votre adresse est obligatoire : quand vous ferez un match, le professionnel saura où se rendre.",f_phone:"Téléphone",f_street:"Adresse (rue et numéro)",f_zip:"Code postal",save_reg:"Enregistrer mon inscription",reg_ok:"Inscription enregistrée. Vous pouvez faire des matchs.",reg_need:"Enregistrez d’abord votre adresse : le professionnel doit savoir où se rendre.",will_go:"Le professionnel se rendra à",match_start:"Recherche par match",match_end:"Vous avez vu tous les professionnels",match_end_s:"Vous pouvez voir la liste complète ou recommencer le match.",match_list:"Voir la liste",match_restart:"Recommencer",match_pass:"Passer",match_pick:"Choisir",swipe_hint:"Glissez à droite pour choisir, à gauche pour passer, ou utilisez les boutons",of:"sur",fee_l:"Commission HogarGo (15 %, min. 5 €)",net_l:"Le professionnel reçoit",held:"Paiement retenu par HogarGo jusqu'à la réalisation du service.",payouts_t:"Paiements",payouts_s:"Vous recevez le montant du service moins la commission de 15 % (minimum 5 € par service). Le paiement du client est retenu par HogarGo et vous est transféré une fois le service réalisé.",payouts_b:"Activer les paiements avec Stripe",payouts_demo:"Si le bouton ne répond pas, vérifiez votre connexion et réessayez.",guide:"Tarif du marché au Luxembourg",reviews:"Avis récents",del_all_t:"Supprimer mes données",del_all_s:"Efface de cet appareil votre inscription client, votre profil professionnel, vos demandes et vos formules. Pour supprimer aussi les enregistrements de paiement du serveur, utilisez la page de suppression de compte.",del_all_b:"Supprimer toutes mes données",del_all_q:"Vous êtes sûr ? Votre inscription client, votre profil professionnel, vos demandes et vos formules seront effacés de cet appareil. Action irréversible.",del_all_ok:"Données supprimées. Cet appareil est maintenant vide.",pay_held_l:"Paiement retenu par HogarGo : il sera libéré au professionnel lorsque vous confirmerez que le service a été réalisé.",pay_done_b:"Confirmer le service réalisé et libérer le paiement",pay_done_q:"Confirmez-vous que le service a bien été réalisé ? Le montant net sera libéré au professionnel. Cette action est irréversible.",pay_released_l:"Paiement libéré au professionnel.",pay_done_ok:"Paiement libéré. Le professionnel a reçu son montant.",pay_nopro:"Le professionnel n'a pas encore activé ses paiements Stripe : le montant reste retenu et en sécurité jusqu'à l'activation.",pay_err:"L'opération de paiement n'a pas pu aboutir. Le montant reste retenu ; réessayez.",pay_ok_t:"Paiement confirmé : le montant est retenu par HogarGo jusqu'à votre confirmation du service.",pay_cancel_t:"Le paiement n'a pas abouti : la demande reste impayée. Vous pouvez réessayer depuis « Demandes ».",pay_now_b:"Payer maintenant",pay_unpaid_l:"Paiement en attente.",legal_p:"Confidentialité",legal_t:"Conditions d'utilisation",legal_d:"Supprimer mon compte"},
-en:{hero_t:"Your home, sorted in 3 taps",hero_s:"Verified professionals for cleaning, shopping, repairs and pets, near you in Luxembourg.",need:"I need a service",need_s:"Find and book a professional",offer:"I offer services",offer_s:"Create your profile and get clients",search_ph:"What do you need? E.g. cleaning, furniture assembly…",cats_t:"Core services",cats_s:"Four clear categories to launch: high frequency, controlled quality, repeat clients.",phase2_t:"Phase 2 · Coming soon",phase2_s:"Activated once the professional base is consolidated.",feat_t:"Featured professionals",back:"Back",book_t:"Request service",f_service:"Service",f_date:"Day",f_time:"Time",f_hours:"Estimated hours",f_addr:"Address / area",addr_ph:"Street and number, city",f_notes:"Details for the professional",book_send:"Send request",book_note:"Secure card payment (Stripe): the amount is held by HogarGo and released to the professional once the service is completed. Payment is made by card through Stripe.",reqs_t:"My requests",reqs_s:"Track the status of every service you have requested.",plans_t:"“Home Sorted” plans",plans_s:"Monthly subscription combining services. Sample prices, editable.",prof_t:"My profile",as_client:"As a client",client_note:"Book services from Home. Your requests are stored under “Requests”.",see_plans:"See the plans",as_pro:"As a professional",pro_note:"Complete your profile to appear in your category. 15% commission per paid service (minimum €5): the client pays your price, no surcharge; the rest is yours.",f_name:"Name",f_cat:"Category",f_sub:"Main service",f_price:"Price per hour (€)",f_city:"City / area",f_bio:"About you",save_pro:"Save and publish my profile",del_pro:"Delete my professional profile",n_home:"Home",n_reqs:"Requests",n_plans:"Plans",n_prof:"Profile",all_cities:"All areas",pros:"professionals",per_h:"€/hour",verified:"Verified",jobs:"jobs",request:"Request",soon:"Coming soon",all:"All",no_pros:"No professionals in this area yet. Try “All areas”.",no_reqs:"You haven't requested any service yet.",pending:"Pending",cancel:"Cancel",cancelled:"Cancelled",est_total:"Estimated total",with_pro:"With",sent_ok:"Request sent. The professional sees it right away.",pro_saved:"Profile published. You now appear in your category.",pro_deleted:"Professional profile deleted.",fill_name:"Enter your name to publish the profile.",choose_plan:"I want this plan",plan_ok:"Plan noted. We'll contact you to activate it.",reg_t:"Client registration",reg_s:"Your address is required: when you match, the professional will know where to go.",f_phone:"Phone",f_street:"Address (street and number)",f_zip:"Postcode",save_reg:"Save my registration",reg_ok:"Registration saved. You can now match.",reg_need:"Register your address first: the professional needs to know where to go.",will_go:"The professional will go to",match_start:"Match search",match_end:"You have seen every professional",match_end_s:"You can view the full list or start the match again.",match_list:"View the list",match_restart:"Restart match",match_pass:"Pass",match_pick:"Select",swipe_hint:"Swipe right to select and left to pass, or use the buttons",of:"of",fee_l:"HogarGo commission (15%, min. €5)",net_l:"The professional receives",held:"Payment held by HogarGo until the service is completed.",payouts_t:"Payouts",payouts_s:"You receive the service amount minus the 15% commission (minimum €5 per service). The client payment is held by HogarGo and transferred to you once the service is completed.",payouts_b:"Activate payouts with Stripe",payouts_demo:"If the button does not respond, check your connection and try again.",guide:"Luxembourg market rate",reviews:"Recent reviews",del_all_t:"Delete my data",del_all_s:"Erases your client registration, professional profile, requests and plans from this device. To also delete the payment records held on the server, use the account deletion page.",del_all_b:"Delete all my data",del_all_q:"Are you sure? Your client registration, professional profile, requests and plans on this device will be erased. This cannot be undone.",del_all_ok:"Data deleted. This device is now clean.",pay_held_l:"Payment held by HogarGo: it will be released to the professional when you confirm the service has been completed.",pay_done_b:"Confirm service completed & release payment",pay_done_q:"Confirm the service has been completed? The net amount will be released to the professional. This cannot be undone.",pay_released_l:"Payment released to the professional.",pay_done_ok:"Payment released. The professional has received their amount.",pay_nopro:"The professional hasn't activated Stripe payouts yet: the amount stays safely held until they do.",pay_err:"The payment operation could not be completed. The amount stays held; please try again.",pay_ok_t:"Payment confirmed: the amount is held by HogarGo until you confirm the service.",pay_cancel_t:"The payment wasn't completed: the request remains unpaid. You can retry from “Requests”.",pay_now_b:"Pay now",pay_unpaid_l:"Payment still to be completed.",legal_p:"Privacy",legal_t:"Terms of use",legal_d:"Delete my account"}
+es:{hero_t:"Tu hogar, resuelto en 3 toques",hero_s:"Profesionales verificados de limpieza, compras, reparaciones y mascotas, cerca de ti en Luxemburgo.",need:"Necesito un servicio",need_s:"Encuentra y reserva un profesional",offer:"Ofrezco servicios",offer_s:"Crea tu perfil y recibe clientes",search_ph:"¿Qué necesitas? Ej.: limpieza, montar un mueble…",cats_t:"Servicios fundamentales",cats_s:"Cuatro categorías claras para empezar: alta frecuencia, calidad controlada y clientes que repiten.",phase2_t:"Fase 2 · Muy pronto",phase2_s:"Se activan cuando la base de profesionales esté consolidada.",feat_t:"Profesionales destacados",back:"Volver",book_t:"Reservar cita",f_service:"Servicio",f_date:"Día",f_time:"Hora",f_hours:"Horas estimadas",f_addr:"Dirección / zona",addr_ph:"Calle y número, ciudad",f_notes:"Detalles para el profesional",book_send:"Confirmar cita",book_note:"Pago seguro con tarjeta (Stripe): el importe queda retenido por HogarGo y se libera al profesional cuando el servicio se realiza. El pago se realiza con tarjeta a través de Stripe.",reqs_t:"Mis citas",reqs_s:"Aquí ves tus citas y el estado de cada servicio.",plans_t:"Planes «Hogar al día»",plans_s:"Suscripción mensual con servicios combinados. Precios de ejemplo, editables.",prof_t:"Mi perfil",as_client:"Como cliente",client_note:"Reserva servicios desde Inicio. Tus citas quedan guardadas en «Citas».",see_plans:"Ver planes «Hogar al día»",as_pro:"Como profesional",pro_note:"Completa tu perfil y aparecerás en el listado de tu categoría. Comisión del 15 % por servicio pagado (mínimo 5 €): el cliente paga tu precio, sin recargo; el resto es tuyo.",f_name:"Nombre",f_cat:"Categoría",f_sub:"Servicio principal",f_price:"Precio por hora (€)",f_city:"Ciudad / zona",f_bio:"Sobre ti",save_pro:"Guardar y publicar mi perfil",del_pro:"Eliminar mi perfil de profesional",n_home:"Inicio",n_reqs:"Citas",n_plans:"Planes",n_prof:"Mi perfil",all_cities:"Todas las zonas",pros:"profesionales",per_h:"€/hora",verified:"Verificado",jobs:"trabajos",request:"Solicitar",soon:"Próximamente",all:"Todos",no_pros:"Aún no hay profesionales en esta zona. Prueba con «Todas las zonas».",no_reqs:"Todavía no has pedido ningún servicio.",pending:"Pendiente",cancel:"Cancelar",cancelled:"Cancelada",est_total:"Total estimado",with_pro:"Con",sent_ok:"Cita confirmada: el profesional la verá al momento.",pro_saved:"Perfil publicado. Ya apareces en tu categoría.",pro_deleted:"Perfil de profesional eliminado.",fill_name:"Escribe tu nombre para publicar el perfil.",choose_plan:"Quiero este plan",plan_ok:"Plan anotado. Te contactaremos para activarlo.",reg_t:"Registro de cliente",reg_s:"Tu dirección es obligatoria: cuando hagas match, el profesional sabrá dónde tiene que ir.",f_phone:"Teléfono",f_street:"Dirección (calle y número)",f_zip:"Código postal",save_reg:"Guardar mi registro",reg_ok:"Registro guardado. Ya puedes hacer match.",reg_need:"Primero registra tu dirección: el profesional necesita saber dónde ir.",will_go:"El profesional irá a",match_start:"Buscar con match",match_end:"Has visto a todos los profesionales",match_end_s:"Puedes ver la lista completa o volver a empezar el match.",match_list:"Ver la lista",match_restart:"Repetir el match",match_pass:"Descartar",match_pick:"Seleccionar",swipe_hint:"Desliza a la derecha para seleccionar y a la izquierda para descartar, o usa los botones",of:"de",fee_l:"Comisión HogarGo (15 %, mín. 5 €)",net_l:"El profesional recibe",held:"Pago retenido por HogarGo hasta que el servicio se realiza.",payouts_t:"Cobros",payouts_s:"Recibes el importe del servicio menos la comisión del 15 % (mínimo 5 € por servicio). El pago del cliente queda retenido por HogarGo y se te transfiere cuando el servicio se realiza.",payouts_b:"Activar cobros con Stripe",payouts_demo:"Si el botón no responde, revisa tu conexión e inténtalo de nuevo.",guide:"Tarifa de mercado en Luxemburgo",reviews:"Valoraciones recientes",del_all_t:"Eliminar mis datos",del_all_s:"Borra de este dispositivo tu registro de cliente, tu perfil de profesional, tus citas y tus planes. Para eliminar también los registros de pago del servidor, usa la página de eliminación de cuenta.",del_all_b:"Eliminar todos mis datos",del_all_q:"¿Seguro? Se borrarán tu registro de cliente, tu perfil de profesional, tus citas y tus planes de este dispositivo. No se puede deshacer.",del_all_ok:"Datos eliminados. Este dispositivo ha quedado limpio.",pay_held_l:"Pago retenido por HogarGo: se liberará al profesional cuando confirmes que el servicio se ha realizado.",pay_done_b:"Confirmar servicio realizado y liberar el pago",pay_done_q:"¿Confirmas que el servicio ya se ha realizado? Se liberará el importe neto al profesional. Esta acción no se puede deshacer.",pay_released_l:"Pago liberado al profesional.",pay_done_ok:"Pago liberado. El profesional ha recibido su importe.",pay_nopro:"El profesional aún no ha activado sus cobros en Stripe: el importe sigue retenido y seguro hasta que los active.",pay_err:"No se pudo completar la operación de pago. El importe sigue retenido; inténtalo de nuevo.",pay_ok_t:"Pago confirmado: el importe queda retenido por HogarGo hasta que confirmes el servicio.",pay_cancel_t:"El pago no se completó: la solicitud queda sin pagar. Puedes reintentarlo desde «Citas».",pay_now_b:"Pagar ahora",pay_unpaid_l:"Pago pendiente de completar.",legal_p:"Privacidad",legal_t:"Condiciones de uso",legal_d:"Eliminar mi cuenta",services_t:"Servicios",book_b:"Reservar",from_l:"desde",reviews_l:"reseñas",about_t:"Sobre mí",no_reviews:"Todavía sin reseñas.",resched_b:"Reprogramar",resched_t:"Reprogramar cita",resched_ok:"Cita reprogramada.",pick_time:"Elige primero una hora libre para tu cita.",no_slots:"No hay horas libres este día.",wk1:"hace 1 semana",wk2:"hace 2 semanas",mo1:"hace 1 mes"},
+fr:{hero_t:"Votre maison, réglée en 3 touches",hero_s:"Des professionnels vérifiés pour le ménage, les courses, les réparations et les animaux, près de chez vous au Luxembourg.",need:"J'ai besoin d'un service",need_s:"Trouvez et réservez un professionnel",offer:"Je propose des services",offer_s:"Créez votre profil et recevez des clients",search_ph:"Que vous faut-il ? Ex. : ménage, monter un meuble…",cats_t:"Services fondamentaux",cats_s:"Quatre catégories claires pour démarrer : haute fréquence, qualité contrôlée, clients fidèles.",phase2_t:"Phase 2 · Bientôt",phase2_s:"Activés une fois la base de professionnels consolidée.",feat_t:"Professionnels en vedette",back:"Retour",book_t:"Réserver",f_service:"Service",f_date:"Jour",f_time:"Heure",f_hours:"Heures estimées",f_addr:"Adresse / zone",addr_ph:"Rue et numéro, ville",f_notes:"Détails pour le professionnel",book_send:"Confirmer",book_note:"Paiement sécurisé par carte (Stripe) : le montant est retenu par HogarGo et libéré au professionnel une fois le service réalisé. Le paiement s'effectue par carte via Stripe.",reqs_t:"Mes rendez-vous",reqs_s:"Suivez ici vos rendez-vous et l'état de chaque service.",plans_t:"Formules « Hogar au quotidien »",plans_s:"Abonnement mensuel combinant plusieurs services. Prix indicatifs, modifiables.",prof_t:"Mon profil",as_client:"En tant que client",client_note:"Réservez depuis l'accueil. Vos rendez-vous sont gardés dans « Rendez-vous ».",see_plans:"Voir les formules",as_pro:"En tant que professionnel",pro_note:"Complétez votre profil pour apparaître dans votre catégorie. Commission de 15 % par service payé (minimum 5 €) : le client paie votre prix, sans supplément ; le reste est pour vous.",f_name:"Nom",f_cat:"Catégorie",f_sub:"Service principal",f_price:"Prix par heure (€)",f_city:"Ville / zone",f_bio:"À propos de vous",save_pro:"Enregistrer et publier mon profil",del_pro:"Supprimer mon profil professionnel",n_home:"Accueil",n_reqs:"Rendez-vous",n_plans:"Formules",n_prof:"Profil",all_cities:"Toutes les zones",pros:"professionnels",per_h:"€/heure",verified:"Vérifié",jobs:"missions",request:"Demander",soon:"Bientôt",all:"Tous",no_pros:"Pas encore de professionnels dans cette zone. Essayez « Toutes les zones ».",no_reqs:"Vous n'avez encore demandé aucun service.",pending:"En attente",cancel:"Annuler",cancelled:"Annulée",est_total:"Total estimé",with_pro:"Avec",sent_ok:"Rendez-vous confirmé : le professionnel le voit tout de suite.",pro_saved:"Profil publié. Vous apparaissez dans votre catégorie.",pro_deleted:"Profil professionnel supprimé.",fill_name:"Écrivez votre nom pour publier le profil.",choose_plan:"Je veux cette formule",plan_ok:"Formule notée. Nous vous contacterons pour l'activer (démo).",reg_t:"Inscription client",reg_s:"Votre adresse est obligatoire : quand vous ferez un match, le professionnel saura où se rendre.",f_phone:"Téléphone",f_street:"Adresse (rue et numéro)",f_zip:"Code postal",save_reg:"Enregistrer mon inscription",reg_ok:"Inscription enregistrée. Vous pouvez faire des matchs.",reg_need:"Enregistrez d’abord votre adresse : le professionnel doit savoir où se rendre.",will_go:"Le professionnel se rendra à",match_start:"Recherche par match",match_end:"Vous avez vu tous les professionnels",match_end_s:"Vous pouvez voir la liste complète ou recommencer le match.",match_list:"Voir la liste",match_restart:"Recommencer",match_pass:"Passer",match_pick:"Choisir",swipe_hint:"Glissez à droite pour choisir, à gauche pour passer, ou utilisez les boutons",of:"sur",fee_l:"Commission HogarGo (15 %, min. 5 €)",net_l:"Le professionnel reçoit",held:"Paiement retenu par HogarGo jusqu'à la réalisation du service.",payouts_t:"Paiements",payouts_s:"Vous recevez le montant du service moins la commission de 15 % (minimum 5 € par service). Le paiement du client est retenu par HogarGo et vous est transféré une fois le service réalisé.",payouts_b:"Activer les paiements avec Stripe",payouts_demo:"Si le bouton ne répond pas, vérifiez votre connexion et réessayez.",guide:"Tarif du marché au Luxembourg",reviews:"Avis récents",del_all_t:"Supprimer mes données",del_all_s:"Efface de cet appareil votre inscription client, votre profil professionnel, vos rendez-vous et vos formules. Pour supprimer aussi les enregistrements de paiement du serveur, utilisez la page de suppression de compte.",del_all_b:"Supprimer toutes mes données",del_all_q:"Vous êtes sûr ? Votre inscription client, votre profil professionnel, vos rendez-vous et vos formules seront effacés de cet appareil. Action irréversible.",del_all_ok:"Données supprimées. Cet appareil est maintenant vide.",pay_held_l:"Paiement retenu par HogarGo : il sera libéré au professionnel lorsque vous confirmerez que le service a été réalisé.",pay_done_b:"Confirmer le service réalisé et libérer le paiement",pay_done_q:"Confirmez-vous que le service a bien été réalisé ? Le montant net sera libéré au professionnel. Cette action est irréversible.",pay_released_l:"Paiement libéré au professionnel.",pay_done_ok:"Paiement libéré. Le professionnel a reçu son montant.",pay_nopro:"Le professionnel n'a pas encore activé ses paiements Stripe : le montant reste retenu et en sécurité jusqu'à l'activation.",pay_err:"L'opération de paiement n'a pas pu aboutir. Le montant reste retenu ; réessayez.",pay_ok_t:"Paiement confirmé : le montant est retenu par HogarGo jusqu'à votre confirmation du service.",pay_cancel_t:"Le paiement n'a pas abouti : la demande reste impayée. Vous pouvez réessayer depuis « Rendez-vous ».",pay_now_b:"Payer maintenant",pay_unpaid_l:"Paiement en attente.",legal_p:"Confidentialité",legal_t:"Conditions d'utilisation",legal_d:"Supprimer mon compte",services_t:"Services",book_b:"Réserver",from_l:"dès",reviews_l:"avis",about_t:"À propos",no_reviews:"Pas encore d'avis.",resched_b:"Reprogrammer",resched_t:"Reprogrammer le rendez-vous",resched_ok:"Rendez-vous reprogrammé.",pick_time:"Choisissez d'abord un créneau libre pour votre rendez-vous.",no_slots:"Aucun créneau libre ce jour-là.",wk1:"il y a 1 semaine",wk2:"il y a 2 semaines",mo1:"il y a 1 mois"},
+en:{hero_t:"Your home, sorted in 3 taps",hero_s:"Verified professionals for cleaning, shopping, repairs and pets, near you in Luxembourg.",need:"I need a service",need_s:"Find and book a professional",offer:"I offer services",offer_s:"Create your profile and get clients",search_ph:"What do you need? E.g. cleaning, furniture assembly…",cats_t:"Core services",cats_s:"Four clear categories to launch: high frequency, controlled quality, repeat clients.",phase2_t:"Phase 2 · Coming soon",phase2_s:"Activated once the professional base is consolidated.",feat_t:"Featured professionals",back:"Back",book_t:"Book appointment",f_service:"Service",f_date:"Day",f_time:"Time",f_hours:"Estimated hours",f_addr:"Address / area",addr_ph:"Street and number, city",f_notes:"Details for the professional",book_send:"Confirm booking",book_note:"Secure card payment (Stripe): the amount is held by HogarGo and released to the professional once the service is completed. Payment is made by card through Stripe.",reqs_t:"My appointments",reqs_s:"Here are your appointments and the status of each service.",plans_t:"“Home Sorted” plans",plans_s:"Monthly subscription combining services. Sample prices, editable.",prof_t:"My profile",as_client:"As a client",client_note:"Book services from Home. Your appointments are stored under “Appointments”.",see_plans:"See the plans",as_pro:"As a professional",pro_note:"Complete your profile to appear in your category. 15% commission per paid service (minimum €5): the client pays your price, no surcharge; the rest is yours.",f_name:"Name",f_cat:"Category",f_sub:"Main service",f_price:"Price per hour (€)",f_city:"City / area",f_bio:"About you",save_pro:"Save and publish my profile",del_pro:"Delete my professional profile",n_home:"Home",n_reqs:"Appointments",n_plans:"Plans",n_prof:"Profile",all_cities:"All areas",pros:"professionals",per_h:"€/hour",verified:"Verified",jobs:"jobs",request:"Request",soon:"Coming soon",all:"All",no_pros:"No professionals in this area yet. Try “All areas”.",no_reqs:"You haven't requested any service yet.",pending:"Pending",cancel:"Cancel",cancelled:"Cancelled",est_total:"Estimated total",with_pro:"With",sent_ok:"Appointment confirmed: the professional sees it right away.",pro_saved:"Profile published. You now appear in your category.",pro_deleted:"Professional profile deleted.",fill_name:"Enter your name to publish the profile.",choose_plan:"I want this plan",plan_ok:"Plan noted. We'll contact you to activate it.",reg_t:"Client registration",reg_s:"Your address is required: when you match, the professional will know where to go.",f_phone:"Phone",f_street:"Address (street and number)",f_zip:"Postcode",save_reg:"Save my registration",reg_ok:"Registration saved. You can now match.",reg_need:"Register your address first: the professional needs to know where to go.",will_go:"The professional will go to",match_start:"Match search",match_end:"You have seen every professional",match_end_s:"You can view the full list or start the match again.",match_list:"View the list",match_restart:"Restart match",match_pass:"Pass",match_pick:"Select",swipe_hint:"Swipe right to select and left to pass, or use the buttons",of:"of",fee_l:"HogarGo commission (15%, min. €5)",net_l:"The professional receives",held:"Payment held by HogarGo until the service is completed.",payouts_t:"Payouts",payouts_s:"You receive the service amount minus the 15% commission (minimum €5 per service). The client payment is held by HogarGo and transferred to you once the service is completed.",payouts_b:"Activate payouts with Stripe",payouts_demo:"If the button does not respond, check your connection and try again.",guide:"Luxembourg market rate",reviews:"Recent reviews",del_all_t:"Delete my data",del_all_s:"Erases your client registration, professional profile, appointments and plans from this device. To also delete the payment records held on the server, use the account deletion page.",del_all_b:"Delete all my data",del_all_q:"Are you sure? Your client registration, professional profile, appointments and plans on this device will be erased. This cannot be undone.",del_all_ok:"Data deleted. This device is now clean.",pay_held_l:"Payment held by HogarGo: it will be released to the professional when you confirm the service has been completed.",pay_done_b:"Confirm service completed & release payment",pay_done_q:"Confirm the service has been completed? The net amount will be released to the professional. This cannot be undone.",pay_released_l:"Payment released to the professional.",pay_done_ok:"Payment released. The professional has received their amount.",pay_nopro:"The professional hasn't activated Stripe payouts yet: the amount stays safely held until they do.",pay_err:"The payment operation could not be completed. The amount stays held; please try again.",pay_ok_t:"Payment confirmed: the amount is held by HogarGo until you confirm the service.",pay_cancel_t:"The payment wasn't completed: the request remains unpaid. You can retry from “Appointments”.",pay_now_b:"Pay now",pay_unpaid_l:"Payment still to be completed.",legal_p:"Privacy",legal_t:"Terms of use",legal_d:"Delete my account",services_t:"Services",book_b:"Book",from_l:"from",reviews_l:"reviews",about_t:"About",no_reviews:"No reviews yet.",resched_b:"Reschedule",resched_t:"Reschedule appointment",resched_ok:"Appointment rescheduled.",pick_time:"First choose a free time for your appointment.",no_slots:"No free times on this day.",wk1:"1 week ago",wk2:"2 weeks ago",mo1:"1 month ago"}
 };
 
 const CATS = [
@@ -396,6 +422,25 @@ const I = (n, c) => `<svg class="icn ${c || ""}"><use href="#i-${n}"/></svg>`;
 const PAY = { fee: 0.15, api: "https://europe-west1-hogargo-lu.cloudfunctions.net" }; // Pasarela Stripe (backend HogarGo). api vacío = modo demo.
 const RANGES = { limpieza:[20,28], compras:[18,24], manitas:[35,55], mascotas:[18,22], instalaciones:[55,85], jardin:[25,40], orden:[40,60] };
 function feeOf(total){ if(!(total>0)) return 0; return Math.min(total, Math.max(5, Math.round(total * PAY.fee * 100) / 100)); }
+/* ---- modelo Booksy: cada profesional ofrece servicios con duración y precio fijo ---- */
+const DURS = { limpieza:[120,180,60,90], compras:[60,90,45,45], manitas:[60,60,45,60], mascotas:[60,45,90,180], tecnico:[90,180,240], jardin:[120,90,60], orden:[180,180,240] };
+function hashStr(x){ let h = 0; for (const ch of (x || "")) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; }
+function isoOf(d){ return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function servicesOf(p){ const c = CATS.find(x=>x.id===p.cat); if(!c) return []; const durs = DURS[c.id] || []; return c.subs.es.map((_,i)=>({ i, name: subName(c, i), dur: durs[i] || 60, price: Math.max(1, Math.round(p.price * ((durs[i] || 60) / 60))) })); }
+function minPrice(p){ const sv = servicesOf(p); return sv.length ? Math.min.apply(null, sv.map(x=>x.price)) : p.price; }
+function fmtDur(min){ if(min < 60) return min + " min"; const h = Math.floor(min / 60), m = min % 60; return m ? (h + " h " + m + " min") : (h + " h"); }
+const LOCALES = { es: "es-ES", fr: "fr-FR", en: "en-GB" };
+function fmtDate(iso){ try{ return new Intl.DateTimeFormat(LOCALES[S.lang] || "es-ES", { weekday: "short", day: "numeric", month: "short" }).format(new Date(iso + "T12:00:00")); }catch(_){ return iso; } }
+function revCount(p){ return p.jobs ? Math.max(3, Math.round(p.jobs * 0.62)) : 0; }
+const REV_NAMES = ["Caroline M.","Jean-Luc P.","Sandra W.","Miguel A.","Petra S.","Olivier D.","Inès B.","Marc T.","Laura G.","Nathalie R.","Tom H.","Élodie F."];
+const REV_TEXT = {
+ es: ["Puntual y muy profesional. La casa quedó impecable, repetiré seguro.","Trabajo cuidadoso y trato excelente. Lo recomiendo sin dudar.","Llegó a la hora exacta y terminó en el tiempo previsto.","Muy buena comunicación y un resultado por encima de lo esperado.","Ya es la tercera vez que reservo y siempre perfecto."],
+ fr: ["Ponctuel et très professionnel. La maison était impeccable, je réserverai à nouveau.","Travail soigné et excellent contact. Je recommande sans hésiter.","Arrivé à l'heure exacte et tout a été fait dans le délai prévu.","Très bonne communication et un résultat au-delà des attentes.","C'est déjà la troisième fois que je réserve et c'est toujours parfait."],
+ en: ["Punctual and very professional. The house was spotless, I will book again.","Careful work and great communication. Highly recommended.","Arrived right on time and finished within the planned time.","Great communication and a result beyond expectations.","This is my third booking and it is always perfect."] };
+function reviewsOf(p){ if(!p.jobs) return []; const c = CATS.find(x=>x.id===p.cat); const h = hashStr(p.id); const texts = REV_TEXT[S.lang] || REV_TEXT.es; const whens = [t("wk1"), t("wk2"), t("mo1")]; const out = [];
+  for(let k = 0; k < 3; k++){ out.push({ name: REV_NAMES[(h + k * 3) % REV_NAMES.length], rating: ((h + k) % 4 === 3) ? 4 : 5, when: whens[(h + k) % 3], text: texts[(h + k) % texts.length], service: c ? subName(c, (h + k) % c.subs.es.length) : "" }); }
+  return out; }
+function slotTaken(proId, date, time){ return hashStr(proId + "|" + date + "|" + time) % 10 < 3; }
 function activatePayouts(){
   if(!PAY.api){ toast(t("payouts_demo")); return; }
   fetch(PAY.api + "/createConnectLink", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({proId: S.myPro ? S.myPro.id : "mine"})})
@@ -424,7 +469,7 @@ function go(scr){ S.prev = (scr==="pro"||scr==="book") ? S.screen : S.prev; S.sc
 }
 function goBack(){ go(S.prev==="pro" ? "cat" : (S.prev || "home")); if(S.cat && S.prev!=="pro") renderCat(); }
 
-function setLang(l){ S.lang=l; save(); applyI18n(); renderHome(); fillCitySelects(); if(S.cat) renderCat(); if(S.screen==="reqs") renderReqs(); if(S.screen==="plans") renderPlans(); }
+function setLang(l){ S.lang=l; save(); applyI18n(); renderHome(); fillCitySelects(); if(S.cat) renderCat(); if(S.screen==="pro") renderPro(); if(S.screen==="book") renderBook(); if(S.screen==="reqs") renderReqs(); if(S.screen==="plans") renderPlans(); }
 function setRole(r){ S.role=r; save();
   document.getElementById("role-client").classList.toggle("on", r==="client");
   document.getElementById("role-pro").classList.toggle("on", r==="pro");
@@ -453,9 +498,9 @@ function proCard(p){
   return `<button class="pro" onclick="openPro('${p.id}')">
     <div class="pro-head">${avatarHTML(p)}
       <div><h3>${p.name} ${p.verified?`<span class="verified">${I("shield","xs")}${t("verified")}</span>`:""}</h3>
-      <div class="meta"><span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> · ${p.jobs} ${t("jobs")} · ${I("pin","xs")} ${p.city}</div>
+      <div class="meta"><span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> (${revCount(p)} ${t("reviews_l")}) · ${I("pin","xs")} ${p.city}</div>
       <div class="tags"><span class="tag">${I(c.ic,"xs")} ${subName(c,p.sub)}</span></div></div>
-      <div class="price"><b>${p.price} €</b><small>${t("per_h")}</small></div>
+      <div class="price"><small>${t("from_l")}</small><b>${minPrice(p)} €</b></div>
     </div></button>`;
 }
 function renderHome(){
@@ -516,7 +561,7 @@ function renderMatch(){
     <h3>${p.name}</h3>
     <div class="meta"><span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> · ${p.jobs} ${t("jobs")} · ${I("pin","xs")} ${p.city}</div>
     ${p.verified?`<div class="verified">${I("shield","xs")}${t("verified")}</div>`:""}
-    <div style="margin-top:8px"><b style="font-size:24px">${p.price} €</b> <small style="color:var(--mut)">${t("per_h")}</small></div>
+    <div style="margin-top:8px"><small style="color:var(--mut)">${t("from_l")}</small> <b style="font-size:24px">${minPrice(p)} €</b></div>
     <p style="margin:10px 0 2px">${bio}</p>
     <div class="macts">
       <button class="mbtn no" onclick="matchPass()" aria-label="${t("match_pass")}">${I("x")}</button>
@@ -558,55 +603,124 @@ function bindSwipe(){
   card.addEventListener("pointercancel", end);
 }
 
-/* ---- detalle de profesional ---- */
+/* ---- detalle de profesional (estilo Booksy: servicios, reseñas) ---- */
 function openPro(id){ S.pro = allPros().find(p=>p.id===id); go("pro"); renderPro(); }
 function renderPro(){
   const p = S.pro; if(!p) return; const c = CATS.find(x=>x.id===p.cat);
   const bio = (p.bio && (p.bio[S.lang] || p.bio.es)) || "";
+  const svcs = servicesOf(p);
+  const revs = reviewsOf(p);
   document.getElementById("pro-detail").innerHTML = `
     <div class="card">
       <div class="pro-head">${avatarHTML(p,70)}
         <div><h3 style="font-size:20px">${p.name}</h3>
-        <div class="meta"><span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> · ${p.jobs} ${t("jobs")} · ${I("pin","xs")} ${p.city}</div>
+        <div class="meta"><span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> (${revCount(p)} ${t("reviews_l")}) · ${p.jobs} ${t("jobs")} · ${I("pin","xs")} ${p.city}</div>
         ${p.verified?`<div class="verified">${I("shield","xs")}${t("verified")}</div>`:""}</div>
-        <div class="price"><b style="font-size:24px">${p.price} €</b><small>${t("per_h")}</small></div>
       </div>
       <div class="tags" style="margin-top:12px"><span class="tag">${I(c.ic,"xs")} ${catName(c)}</span><span class="tag">${subName(c,p.sub)}</span></div>
-      <p style="margin:14px 0 4px">${bio}</p>
-      <button class="btn" onclick="openBook()">${t("request")} · ${p.price} ${t("per_h")}</button>
+      ${bio?`<h3 class="sub-t">${t("about_t")}</h3><p style="margin:4px 0 0">${bio}</p>`:""}
+    </div>
+    <div class="card">
+      <h3 class="sub-t" style="margin-top:0">${t("services_t")}</h3>
+      ${svcs.map(sv=>`<div class="svc"><div><div class="nm">${sv.name}</div><div class="dur">${I("clock","xs")} ${fmtDur(sv.dur)}</div></div><div class="pr"><b>${sv.price} €</b></div><button class="mini" onclick="openBook(${sv.i})">${t("book_b")}</button></div>`).join("")}
+    </div>
+    <div class="card">
+      <h3 class="sub-t" style="margin-top:0">${t("reviews")} · <span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> (${revCount(p)})</h3>
+      ${revs.length ? revs.map(r=>`<div class="rev"><div class="rev-h"><b>${r.name}</b><span class="stars">${I("star","xs fill").repeat(r.rating)}${I("star","xs").repeat(5 - r.rating)}</span><span class="note">${r.when}</span></div><div class="note">${r.service}</div><p style="margin:3px 0 0">${r.text}</p></div>`).join("") : `<p class="note">${t("no_reviews")}</p>`}
     </div>`;
 }
 
-/* ---- reserva ---- */
-function openBook(){
+/* ---- reserva tipo cita (Booksy): servicio -> día -> hora libre -> confirmar ---- */
+let B = { svc: 0, date: null, time: null, resched: null };
+function bookBack(){ if(B.resched){ B.resched = null; go("reqs"); } else { go("pro"); } }
+function openBook(svcIdx){
   if(!requireReg()) return;
-  const p = S.pro; const c = CATS.find(x=>x.id===p.cat);
-  document.getElementById("book-with").innerHTML = `<div class="pro-head" style="margin-bottom:12px">${avatarHTML(p)}<div><h3>${t("with_pro")} ${p.name}</h3><div class="meta">${I(c.ic,"xs")} ${catName(c)} · ${I("pin","xs")} ${p.city}</div></div></div>`;
-  document.getElementById("b-service").innerHTML = (c.subs[S.lang]||c.subs.es).map((s,i)=>`<option value="${i}" ${i===p.sub?"selected":""}>${s}</option>`).join("");
-  const d = new Date(); d.setDate(d.getDate()+1);
-  document.getElementById("b-date").value = d.toISOString().slice(0,10);
-  const ca = clientAddr(); if(ca) document.getElementById("b-addr").value = ca;
-  updTotal(); go("book");
-}
-function updTotal(){
   const p = S.pro; if(!p) return;
-  const h = parseFloat(document.getElementById("b-hours").value || 2);
-  const total = p.price*h, fee = feeOf(total), net = total - fee;
-  document.getElementById("b-total").innerHTML = `${t("est_total")}: <b>${total.toFixed(0)} €</b> (${p.price} € × ${h} h)<br><span style="color:var(--mut);font-size:13px">${t("fee_l")}: ${fee.toFixed(2)} € · ${t("net_l")}: ${net.toFixed(2)} €<br>${t("held")}${(document.getElementById("b-addr").value || "") ? "<br>" + t("will_go") + ": " + document.getElementById("b-addr").value : ""}</span>`;
+  B = { svc: (typeof svcIdx === "number") ? svcIdx : p.sub, date: null, time: null, resched: null };
+  const d = new Date(); d.setDate(d.getDate() + 1); B.date = isoOf(d);
+  document.getElementById("b-addr").value = clientAddr();
+  document.getElementById("b-notes").value = "";
+  renderBook(); go("book");
+}
+function openResched(id){
+  const r = S.reqs.find(x=>x.id===id); if(!r) return;
+  let p = allPros().find(x=>x.id===r.proId);
+  if(!p){ p = { id: r.proId, name: r.proName, cat: r.cat, sub: 0, price: r.dur ? Math.max(16, Math.round(r.total / (r.dur / 60))) : 25, city: "", rating: 0, jobs: 0, verified: false, bio: null }; }
+  S.pro = p;
+  B = { svc: (typeof r.svc === "number") ? r.svc : p.sub, date: r.date, time: null, resched: id };
+  document.getElementById("b-addr").value = r.addr || clientAddr();
+  document.getElementById("b-notes").value = r.notes || "";
+  renderBook(); go("book");
+}
+function renderBook(){
+  const p = S.pro; if(!p) return; const c = CATS.find(x=>x.id===p.cat);
+  document.getElementById("book-title").textContent = B.resched ? t("resched_t") : t("book_t");
+  document.getElementById("book-with").innerHTML = `<div class="pro-head" style="margin-bottom:12px">${avatarHTML(p)}<div><h3>${t("with_pro")} ${p.name}</h3><div class="meta">${I(c.ic,"xs")} ${catName(c)} · ${I("pin","xs")} ${p.city}</div></div></div>`;
+  const svcs = servicesOf(p);
+  const sel = document.getElementById("b-service");
+  sel.innerHTML = svcs.map(sv=>`<option value="${sv.i}" ${sv.i===B.svc?"selected":""}>${sv.name} · ${fmtDur(sv.dur)} · ${sv.price} €</option>`).join("");
+  sel.disabled = !!B.resched;
+  renderDays(); renderSlots(); updBookSummary();
+  document.getElementById("b-send").textContent = B.resched ? t("resched_b") : t("book_send");
+}
+function pickService(){ B.svc = parseInt(document.getElementById("b-service").value, 10); B.time = null; renderSlots(); updBookSummary(); }
+function renderDays(){
+  const loc = LOCALES[S.lang] || "es-ES";
+  const df = new Intl.DateTimeFormat(loc, { weekday: "short" });
+  const mf = new Intl.DateTimeFormat(loc, { month: "short" });
+  let html = "";
+  for(let k = 0; k < 14; k++){
+    const d = new Date(); d.setDate(d.getDate() + k);
+    const iso = isoOf(d);
+    html += `<button class="day ${iso===B.date?"on":""}" onclick="pickDay('${iso}')"><span class="dw">${df.format(d)}</span><span class="dn">${d.getDate()}</span><span class="dm">${mf.format(d)}</span></button>`;
+  }
+  document.getElementById("b-days").innerHTML = html;
+}
+function pickDay(iso){ B.date = iso; B.time = null; renderDays(); renderSlots(); updBookSummary(); }
+function slotList(){
+  const out = [];
+  for(let h = 8; h <= 19; h++){ out.push(String(h).padStart(2, "0") + ":00"); if(h < 19) out.push(String(h).padStart(2, "0") + ":30"); }
+  return out;
+}
+function renderSlots(){
+  const p = S.pro; if(!p || !B.date) return;
+  const todayIso = isoOf(new Date());
+  const now = new Date(); const nowMin = now.getHours() * 60 + now.getMinutes() + 30;
+  document.getElementById("b-slots").innerHTML = slotList().map(tm=>{
+    const pr = tm.split(":"); const mins = (+pr[0]) * 60 + (+pr[1]);
+    const dis = slotTaken(p.id, B.date, tm) || (B.date === todayIso && mins <= nowMin);
+    return `<button class="slot ${tm===B.time?"on":""}" ${dis?"disabled":""} onclick="pickSlot('${tm}')">${tm}</button>`;
+  }).join("");
+}
+function pickSlot(tm){ B.time = tm; renderSlots(); updBookSummary(); }
+function curService(){ const svcs = servicesOf(S.pro); return svcs.find(x=>x.i===B.svc) || svcs[0]; }
+function updBookSummary(){
+  const p = S.pro; if(!p) return; const sv = curService(); if(!sv) return;
+  const fee = feeOf(sv.price), net = sv.price - fee;
+  const when = B.date ? (fmtDate(B.date) + (B.time ? " · " + B.time : "")) : "";
+  const addr = document.getElementById("b-addr").value || "";
+  document.getElementById("b-total").innerHTML = `<b>${sv.name}</b> · ${fmtDur(sv.dur)}<br>${when ? (I("cal","xs") + " " + when + "<br>") : ""}${t("est_total")}: <b>${sv.price} €</b><br><span style="color:var(--mut);font-size:13px">${t("fee_l")}: ${fee.toFixed(2)} € · ${t("net_l")}: ${net.toFixed(2)} €<br>${t("held")}${addr ? "<br>" + t("will_go") + ": " + addr : ""}</span>`;
+  const send = document.getElementById("b-send"); if(send) send.disabled = !B.time;
 }
 function submitBooking(){
-  const p = S.pro; const c = CATS.find(x=>x.id===p.cat);
-  const total = p.price * parseFloat(document.getElementById("b-hours").value||2);
-  const req = { id:"r"+Date.now(), proId:p.id, proName:p.name, cat:p.cat,
-    service: subName(c, parseInt(document.getElementById("b-service").value,10)),
-    date: document.getElementById("b-date").value, time: document.getElementById("b-time").value,
-    hours: document.getElementById("b-hours").value, addr: document.getElementById("b-addr").value,
+  const p = S.pro; if(!p) return; const sv = curService(); if(!sv) return;
+  if(!B.time){ toast(t("pick_time")); return; }
+  if(B.resched){
+    const r = S.reqs.find(x=>x.id===B.resched);
+    if(r){ r.date = B.date; r.time = B.time; save(); }
+    B.resched = null; toast(t("resched_ok")); go("reqs"); return;
+  }
+  const total = sv.price;
+  const req = { id: "r" + Date.now(), proId: p.id, proName: p.name, cat: p.cat, svc: sv.i,
+    service: sv.name, dur: sv.dur,
+    date: B.date, time: B.time,
+    addr: document.getElementById("b-addr").value,
     notes: document.getElementById("b-notes").value, total: total,
     fee: feeOf(total), net: total - feeOf(total), pay: PAY.api ? "pending" : "demo", clientName: S.client ? S.client.name : "",
-    status:"pending" };
+    status: "pending" };
   S.reqs.unshift(req); save();
   if(PAY.api){
-    fetch(PAY.api + "/createCheckout", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({reqId: req.id, total: total, service: req.service, proId: req.proId})})
+    fetch(PAY.api + "/createCheckout", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({reqId: req.id, total: total, service: req.service, proId: req.proId})})
       .then(r=>r.json()).then(d=>{ if(d.url){ location.href = d.url; } else { toast(t("sent_ok")); go("reqs"); } })
       .catch(()=>{ toast(t("sent_ok")); go("reqs"); });
     return;
@@ -619,9 +733,10 @@ function renderReqs(){
   el.innerHTML = S.reqs.map(r=>{ const c = CATS.find(x=>x.id===r.cat); return `<div class="card req">
     <div class="tile sm">${I(c?c.ic:"home")}</div>
     <div><h4>${r.service}</h4>
-    <p>${r.proName} · ${I("cal","xs")} ${r.date} · ${I("clock","xs")} ${r.time} · ${r.hours} h · <b>${r.total} €</b></p>
+    <p>${r.proName} · ${I("cal","xs")} ${fmtDate(r.date)} · ${I("clock","xs")} ${r.time}${r.dur ? " · " + fmtDur(r.dur) : (r.hours ? " · " + r.hours + " h" : "")} · <b>${r.total} €</b></p>
     ${r.addr?`<p>${I("pin","xs")} ${r.addr}</p>`:""} ${r.notes?`<p>${I("note","xs")} ${r.notes}</p>`:""}
     ${(r.status==="pending" && r.pay!=="held" && r.pay!=="released")?`<button class="btn warn" style="margin-top:8px;padding:9px" onclick="cancelReq('${r.id}')">${t("cancel")}</button>`:""}
+    ${(r.status==="pending" && r.pay!=="released")?`<button class="btn sec" style="margin-top:8px;padding:9px" onclick="openResched('${r.id}')">${t("resched_b")}</button>`:""}
     ${payBlock(r)}
     </div>
     <span class="pill ${r.status==="pending"?"":"off"}">${r.status==="pending"?t("pending"):t("cancelled")}</span>
@@ -730,7 +845,6 @@ function requireReg(){
 /* ---- arranque ---- */
 document.getElementById("q").addEventListener("input", renderHome);
 document.getElementById("qcity").addEventListener("change", ()=>{ renderHome(); if(S.screen==="cat") renderCat(); });
-document.getElementById("b-hours").addEventListener("change", updTotal);
 document.getElementById("role-client").classList.toggle("on", S.role==="client");
 document.getElementById("role-pro").classList.toggle("on", S.role==="pro");
 applyI18n(); fillCitySelects(); fillProCats(); fillReg(); renderHome();
