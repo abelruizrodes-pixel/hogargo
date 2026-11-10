@@ -141,6 +141,16 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
 .stamp.yes{left:16px;color:var(--teal-d);border-color:var(--teal-d);transform:rotate(-10deg)}
 
 /* ===== modo Booksy: servicios con precio/duración, días y horas, reseñas ===== */
+/* ===== fotos: categorías, servicios, listados, match y reserva ===== */
+.cat{padding:0; overflow:hidden}
+.cat .ph{width:100%; height:104px; object-fit:cover; display:block}
+.cat .bd{padding:12px 14px 14px; display:flex; flex-direction:column; align-items:flex-start}
+.cat.soon .ph{filter:grayscale(.55)}
+.hero{width:100%; height:150px; object-fit:cover; border-radius:var(--r); display:block; box-shadow:var(--sh)}
+.svc-img{width:52px; height:52px; border-radius:12px; object-fit:cover; flex:none}
+.pro .pb{width:calc(100% + 28px); height:118px; object-fit:cover; display:block; margin:-14px -14px 12px; border-radius:var(--r) var(--r) 0 0}
+.mcard .mb{width:calc(100% + 44px); height:150px; object-fit:cover; display:block; margin:-22px -22px 14px; border-radius:20px 20px 0 0}
+.bk-img{width:100%; height:120px; object-fit:cover; border-radius:12px; display:block; margin:0 0 12px}
 .sub-t{font-size:16px;font-weight:800;margin:16px 0 4px}
 .svc{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
 .svc:last-child{border-bottom:none;padding-bottom:2px}
@@ -236,6 +246,7 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
     <button class="back" onclick="go('home')"><svg class="icn"><use href="#i-arrow"/></svg><span data-i="back">Volver</span></button>
     <h2 class="sec-t" id="cat-title"></h2>
     <p class="sec-s" id="cat-desc"></p>
+    <div id="cat-hero" style="margin:2px 0 10px"></div>
     <div class="subs" id="cat-subs"></div>
     <button class="btn" id="match-btn" onclick="startMatch()"><svg class="icn"><use href="#i-heart"/></svg><span data-i="match_start">Buscar con match</span></button>
     <div id="cat-pros"></div>
@@ -426,6 +437,8 @@ function feeOf(total){ if(!(total>0)) return 0; return Math.min(total, Math.max(
 const DURS = { limpieza:[120,180,60,90], compras:[60,90,45,45], manitas:[60,60,45,60], mascotas:[60,45,90,180], tecnico:[90,180,240], jardin:[120,90,60], orden:[180,180,240] };
 function hashStr(x){ let h = 0; for (const ch of (x || "")) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; }
 function isoOf(d){ return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function catImg(c){ return "img/cat-" + c.id + ".jpg"; }
+function svcImg(catId, i){ return "img/svc-" + catId + "-" + i + ".jpg"; }
 function servicesOf(p){ const c = CATS.find(x=>x.id===p.cat); if(!c) return []; const durs = DURS[c.id] || []; return c.subs.es.map((_,i)=>({ i, name: subName(c, i), dur: durs[i] || 60, price: Math.max(1, Math.round(p.price * ((durs[i] || 60) / 60))) })); }
 function minPrice(p){ const sv = servicesOf(p); return sv.length ? Math.min.apply(null, sv.map(x=>x.price)) : p.price; }
 function fmtDur(min){ if(min < 60) return min + " min"; const h = Math.floor(min / 60), m = min % 60; return m ? (h + " h " + m + " min") : (h + " h"); }
@@ -490,12 +503,13 @@ function fillCitySelects(){
   document.getElementById("c-city").innerHTML = CITIES.map(c=>`<option>${c}</option>`).join("");
 }
 function catCard(c){
-  if(c.phase===2) return `<button class="cat soon" onclick="toast('${t("soon")}')"><span class="soon-tag">${t("soon")}</span><div class="tile amber">${I(c.ic)}</div><h3>${catName(c)}</h3><p>${catDesc(c)}</p></button>`;
-  return `<button class="cat" onclick="openCat('${c.id}')"><div class="tile">${I(c.ic)}</div><h3>${catName(c)}</h3><p>${catDesc(c)}</p><span class="n">${proCount(c.id)} ${t("pros")}</span></button>`;
+  if(c.phase===2) return `<button class="cat soon" onclick="toast('${t("soon")}')"><img class="ph" src="${catImg(c)}" alt="" loading="lazy" onerror="this.remove()"><span class="soon-tag">${t("soon")}</span><div class="bd"><div class="tile amber">${I(c.ic)}</div><h3>${catName(c)}</h3><p>${catDesc(c)}</p></div></button>`;
+  return `<button class="cat" onclick="openCat('${c.id}')"><img class="ph" src="${catImg(c)}" alt="" loading="lazy" onerror="this.remove()"><div class="bd"><div class="tile">${I(c.ic)}</div><h3>${catName(c)}</h3><p>${catDesc(c)}</p><span class="n">${proCount(c.id)} ${t("pros")}</span></div></button>`;
 }
 function proCard(p){
   const c = CATS.find(x=>x.id===p.cat);
   return `<button class="pro" onclick="openPro('${p.id}')">
+    <img class="pb" src="${svcImg(c.id, p.sub)}" alt="" loading="lazy" onerror="this.remove()">
     <div class="pro-head">${avatarHTML(p)}
       <div><h3>${p.name} ${p.verified?`<span class="verified">${I("shield","xs")}${t("verified")}</span>`:""}</h3>
       <div class="meta"><span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> (${revCount(p)} ${t("reviews_l")}) · ${I("pin","xs")} ${p.city}</div>
@@ -520,6 +534,7 @@ function renderCat(){
   const c = S.cat; if(!c) return;
   document.getElementById("cat-title").innerHTML = I(c.ic) + "<span>" + catName(c) + "</span>";
   document.getElementById("cat-desc").textContent = catDesc(c);
+  document.getElementById("cat-hero").innerHTML = `<img class="hero" src="${catImg(c)}" alt="" onerror="this.remove()">`;
   const subs = (c.subs[S.lang] || c.subs.es);
   document.getElementById("cat-subs").innerHTML = `<button class="${S.subFilter===-1?'on':''}" onclick="setSub(-1)">${t("all")}</button>` + subs.map((s,i)=>`<button class="${S.subFilter===i?'on':''}" onclick="setSub(${i})">${s}</button>`).join("");
   const city = document.getElementById("qcity").value;
@@ -557,7 +572,7 @@ function renderMatch(){
   cnt.textContent = (M.i+1) + " " + t("of") + " " + M.deck.length + " · " + subName(pc, p.sub);
   const bio = (p.bio && (p.bio[S.lang] || p.bio.es)) || "";
   box.innerHTML = `<div class="mbar"><i style="width:${(M.i/M.deck.length)*100}%"></i></div>
-  <div class="mcard"><div class="stamp no">${t("match_pass")}</div><div class="stamp yes">${t("match_pick")}</div>${avatarHTML(p,84)}
+  <div class="mcard"><div class="stamp no">${t("match_pass")}</div><div class="stamp yes">${t("match_pick")}</div><img class="mb" src="${svcImg(pc.id, p.sub)}" alt="" loading="lazy" onerror="this.remove()">${avatarHTML(p,84)}
     <h3>${p.name}</h3>
     <div class="meta"><span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> · ${p.jobs} ${t("jobs")} · ${I("pin","xs")} ${p.city}</div>
     ${p.verified?`<div class="verified">${I("shield","xs")}${t("verified")}</div>`:""}
@@ -622,7 +637,7 @@ function renderPro(){
     </div>
     <div class="card">
       <h3 class="sub-t" style="margin-top:0">${t("services_t")}</h3>
-      ${svcs.map(sv=>`<div class="svc"><div><div class="nm">${sv.name}</div><div class="dur">${I("clock","xs")} ${fmtDur(sv.dur)}</div></div><div class="pr"><b>${sv.price} €</b></div><button class="mini" onclick="openBook(${sv.i})">${t("book_b")}</button></div>`).join("")}
+      ${svcs.map(sv=>`<div class="svc"><img class="svc-img" src="${svcImg(c.id, sv.i)}" alt="" loading="lazy" onerror="this.remove()"><div style="flex:1"><div class="nm">${sv.name}</div><div class="dur">${I("clock","xs")} ${fmtDur(sv.dur)}</div></div><div class="pr"><b>${sv.price} €</b></div><button class="mini" onclick="openBook(${sv.i})">${t("book_b")}</button></div>`).join("")}
     </div>
     <div class="card">
       <h3 class="sub-t" style="margin-top:0">${t("reviews")} · <span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> (${revCount(p)})</h3>
@@ -652,10 +667,14 @@ function openResched(id){
   document.getElementById("b-notes").value = r.notes || "";
   renderBook(); go("book");
 }
+function bookHead(){
+  const p = S.pro; const c = CATS.find(x=>x.id===p.cat);
+  return `<img class="bk-img" src="${svcImg(c.id, B.svc)}" alt="" onerror="this.remove()"><div class="pro-head" style="margin-bottom:12px">${avatarHTML(p)}<div><h3>${t("with_pro")} ${p.name}</h3><div class="meta">${I(c.ic,"xs")} ${catName(c)} · ${I("pin","xs")} ${p.city}</div></div></div>`;
+}
 function renderBook(){
   const p = S.pro; if(!p) return; const c = CATS.find(x=>x.id===p.cat);
   document.getElementById("book-title").textContent = B.resched ? t("resched_t") : t("book_t");
-  document.getElementById("book-with").innerHTML = `<div class="pro-head" style="margin-bottom:12px">${avatarHTML(p)}<div><h3>${t("with_pro")} ${p.name}</h3><div class="meta">${I(c.ic,"xs")} ${catName(c)} · ${I("pin","xs")} ${p.city}</div></div></div>`;
+  document.getElementById("book-with").innerHTML = bookHead();
   const svcs = servicesOf(p);
   const sel = document.getElementById("b-service");
   sel.innerHTML = svcs.map(sv=>`<option value="${sv.i}" ${sv.i===B.svc?"selected":""}>${sv.name} · ${fmtDur(sv.dur)} · ${sv.price} €</option>`).join("");
@@ -663,7 +682,7 @@ function renderBook(){
   renderDays(); renderSlots(); updBookSummary();
   document.getElementById("b-send").textContent = B.resched ? t("resched_b") : t("book_send");
 }
-function pickService(){ B.svc = parseInt(document.getElementById("b-service").value, 10); B.time = null; renderSlots(); updBookSummary(); }
+function pickService(){ B.svc = parseInt(document.getElementById("b-service").value, 10); B.time = null; document.getElementById("book-with").innerHTML = bookHead(); renderSlots(); updBookSummary(); }
 function renderDays(){
   const loc = LOCALES[S.lang] || "es-ES";
   const df = new Intl.DateTimeFormat(loc, { weekday: "short" });
