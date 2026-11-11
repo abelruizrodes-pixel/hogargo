@@ -145,6 +145,20 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
 .stamp.no{right:16px;color:#B4552D;border-color:#B4552D;transform:rotate(10deg)}
 .stamp.yes{left:16px;color:var(--teal-d);border-color:var(--teal-d);transform:rotate(-10deg)}
 
+/* ===== carruseles deslizables: servicios y profesionales ===== */
+.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 4px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.rail::-webkit-scrollbar{display:none}
+.rail>*{scroll-snap-align:start}
+.rail .cat{flex:0 0 64%;margin:0}
+.rail .pro{flex:0 0 86%;margin:0}
+.rail>.empty{flex:0 0 100%}
+.dots{display:flex;gap:6px;justify-content:center;margin:0 0 14px;min-height:7px}
+.dots i{width:7px;height:7px;border-radius:99px;background:#D8CFBB;transition:width .2s,background .2s}
+.dots i.on{width:20px;background:var(--teal)}
+.svc-rail .svc{flex:0 0 72%;flex-direction:column;align-items:stretch;gap:8px;border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card)}
+.svc-rail .svc-img{width:100%;height:104px;border-radius:10px}
+.svc-rail .svc .pr{margin-left:0;text-align:left}
+.svc-rail .svc .mini{width:100%;padding:10px 15px}
 /* ===== modo Booksy: servicios con precio/duración, días y horas, reseñas ===== */
 /* ===== fotos: categorías, servicios, listados, match y reserva ===== */
 .cat{padding:0; overflow:hidden}
@@ -238,12 +252,15 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
     </div>
     <h2 class="sec-t" data-i="cats_t">Servicios fundamentales</h2>
     <p class="sec-s" data-i="cats_s">Cuatro categorías claras para empezar: alta frecuencia, calidad controlada y clientes que repiten.</p>
-    <div class="cat-grid" id="cat-grid"></div>
+    <div class="rail" id="cat-grid"></div>
+    <div class="dots" id="cat-dots"></div>
     <h2 class="sec-t" data-i="phase2_t">Fase 2 · Muy pronto</h2>
     <p class="sec-s" data-i="phase2_s">Se activan cuando la base de profesionales esté consolidada.</p>
-    <div class="cat-grid" id="cat-grid2"></div>
+    <div class="rail" id="cat-grid2"></div>
+    <div class="dots" id="cat-dots2"></div>
     <h2 class="sec-t" data-i="feat_t">Profesionales destacados</h2>
-    <div id="feat-list"></div>
+    <div class="rail" id="feat-list"></div>
+    <div class="dots" id="feat-dots"></div>
   </section>
 
   <!-- CATEGORY -->
@@ -254,7 +271,8 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
     <div id="cat-hero" style="margin:2px 0 10px"></div>
     <div class="subs" id="cat-subs"></div>
     <button class="btn" id="match-btn" onclick="startMatch()"><svg class="icn"><use href="#i-heart"/></svg><span data-i="match_start">Buscar con match</span></button>
-    <div id="cat-pros"></div>
+    <div class="rail" id="cat-pros"></div>
+    <div class="dots" id="catp-dots"></div>
   </section>
 
   <!-- MATCH -->
@@ -573,6 +591,17 @@ function proCard(p){
       <div class="price"><small>${t("from_l")}</small><b>${minPrice(p)} €</b></div>
     </div></button>`;
 }
+function railDots(railId, dotsId){
+  const rail = document.getElementById(railId), dots = document.getElementById(dotsId);
+  if(!rail || !dots) return;
+  const n = rail.children.length;
+  rail.scrollLeft = 0;
+  if(n < 2){ dots.innerHTML = ""; return; }
+  dots.innerHTML = Array.from({length: n}, () => "<i></i>").join("");
+  const upd = () => { const w = rail.scrollWidth - rail.clientWidth; const idx = w > 0 ? Math.round(rail.scrollLeft / w * (n - 1)) : 0; Array.prototype.forEach.call(dots.children, (d, i) => d.classList.toggle("on", i === idx)); };
+  rail.onscroll = () => { if(window.requestAnimationFrame) requestAnimationFrame(upd); else upd(); };
+  upd();
+}
 function renderHome(){
   document.getElementById("cat-grid").innerHTML = CATS.filter(c=>c.phase===1).map(catCard).join("");
   document.getElementById("cat-grid2").innerHTML = CATS.filter(c=>c.phase===2).map(catCard).join("");
@@ -582,6 +611,7 @@ function renderHome(){
   if(city) list = list.filter(p=>p.city===city);
   if(q) list = list.filter(p=> p.name.toLowerCase().includes(q) || proCats(p).some(cid=>{ const c=CATS.find(x=>x.id===cid); return c && catName(c).toLowerCase().includes(q); }) || servicesOf(p).some(sv=>sv.name.toLowerCase().includes(q)));
   document.getElementById("feat-list").innerHTML = list.length ? list.slice(0,6).map(proCard).join("") : `<div class="empty">${t("no_pros")}</div>`;
+  railDots("cat-grid", "cat-dots"); railDots("cat-grid2", "cat-dots2"); railDots("feat-list", "feat-dots");
 }
 
 /* ---- categoría ---- */
@@ -599,6 +629,7 @@ function renderCat(){
   if(city) list = list.filter(p=>p.city===city);
   list.sort((a,b)=>b.rating-a.rating);
   document.getElementById("cat-pros").innerHTML = list.length ? list.map(proCard).join("") : `<div class="empty">${t("no_pros")}</div>`;
+  railDots("cat-pros", "catp-dots");
 }
 function setSub(i){ S.subFilter=i; renderCat(); }
 
@@ -694,12 +725,13 @@ function renderPro(){
     </div>
     <div class="card">
       <h3 class="sub-t" style="margin-top:0">${t("services_t")}</h3>
-      ${svcs.map(sv=>`<div class="svc"><img class="svc-img" src="${svcImg(sv.cat, sv.i)}" alt="" loading="lazy" onerror="this.remove()"><div style="flex:1"><div class="nm">${sv.name}</div><div class="dur">${I("clock","xs")} ${fmtDur(sv.dur)}</div></div><div class="pr"><b>${sv.price} €</b></div><button class="mini" onclick="openBook('${sv.key}')">${t("book_b")}</button></div>`).join("")}
+      ${svcs.length > 1 ? `<div class="rail svc-rail" id="pro-svcs">${svcs.map(sv=>`<div class="svc"><img class="svc-img" src="${svcImg(sv.cat, sv.i)}" alt="" loading="lazy" onerror="this.remove()"><div class="nm">${sv.name}</div><div class="dur">${I("clock","xs")} ${fmtDur(sv.dur)}</div><div class="pr"><b>${sv.price} €</b></div><button class="mini" onclick="openBook('${sv.key}')">${t("book_b")}</button></div>`).join("")}</div><div class="dots" id="prosvc-dots"></div>` : svcs.map(sv=>`<div class="svc"><img class="svc-img" src="${svcImg(sv.cat, sv.i)}" alt="" loading="lazy" onerror="this.remove()"><div style="flex:1"><div class="nm">${sv.name}</div><div class="dur">${I("clock","xs")} ${fmtDur(sv.dur)}</div></div><div class="pr"><b>${sv.price} €</b></div><button class="mini" onclick="openBook('${sv.key}')">${t("book_b")}</button></div>`).join("")}
     </div>
     <div class="card">
       <h3 class="sub-t" style="margin-top:0">${t("reviews")} · <span class="stars">${I("star","xs fill")} ${p.rating.toFixed(1)}</span> (${revCount(p)})</h3>
       ${revs.length ? revs.map(r=>`<div class="rev"><div class="rev-h"><b>${r.name}</b><span class="stars">${I("star","xs fill").repeat(r.rating)}${I("star","xs").repeat(5 - r.rating)}</span><span class="note">${r.when}</span></div><div class="note">${r.service}</div><p style="margin:3px 0 0">${r.text}</p></div>`).join("") : `<p class="note">${t("no_reviews")}</p>`}
     </div>`;
+  railDots("pro-svcs", "prosvc-dots");
 }
 
 /* ---- reserva tipo cita (Booksy): servicio -> día -> hora libre -> confirmar ---- */
