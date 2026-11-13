@@ -894,7 +894,7 @@ function renderPlans(){
     <h3>${pl.name[S.lang]||pl.name.es} ${pl.hot?I("star","sm fill"):""}</h3><div class="p-price">${pl.price} €<small style="font-size:13px;color:var(--mut)"> ${t("per_month")}</small></div>
     <div class="p-worth">${t("worth_l")}: <s>${pl.loose} €</s> · <span class="p-save">${t("save_l").replace("%s", pl.loose - pl.price)}</span></div>
     <ul>${(pl.items[S.lang]||pl.items.es).map(x=>`<li>${x}</li>`).join("")}</ul>
-    <button class="btn ${pl.hot?"":"sec"}" onclick="toast('${t("plan_ok")}')">${t("choose_plan")}</button>
+    <button class="btn ${pl.hot?"":"sec"}" onclick="toast('${t("plan_ok")}')">${t("choose_plan")}</button></div>`).join("");
 }
 
 /* ---- perfil profesional: formulario individual con varios servicios ---- */
