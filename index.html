@@ -203,6 +203,31 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
 .rev:last-child{border-bottom:none;padding-bottom:2px}
 .rev-h{display:flex;align-items:center;gap:8px}
 .rev-h .note{margin-left:auto}
+
+/* ---- selector de ubicación (TaskRabbit) ---- */
+.locbtn{margin-left:8px; display:inline-flex; align-items:center; gap:5px; border:1px solid var(--line); background:var(--card); border-radius:999px; padding:5px 10px; font-size:13px; font-weight:700; color:var(--ink); cursor:pointer; max-width:44vw}
+.locbtn span#loc-btn-t{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.locbtn .chev, .loc .chev{font-size:10px; color:var(--mut)}
+.loc{cursor:pointer}
+.locsheet{position:fixed; inset:0; z-index:80; background:rgba(20,26,22,.45); display:flex; align-items:flex-end; justify-content:center}
+.locpanel{background:var(--bg); width:100%; max-width:560px; max-height:88vh; overflow-y:auto; border-radius:18px 18px 0 0; padding:16px 16px 22px}
+@media(min-width:640px){ .locsheet{align-items:center} .locpanel{border-radius:18px} }
+.loc-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
+.loc-head h3{margin:0; font-size:18px}
+.loc-x{border:1px solid var(--line); background:var(--card); border-radius:999px; width:32px; height:32px; font-size:14px; cursor:pointer; color:var(--mut)}
+.loc-search{width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:12px; padding:11px 12px; font-size:15px; background:var(--card); margin-bottom:6px}
+.loc-zone{font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--mut); margin:14px 2px 6px}
+.loc-item{display:flex; align-items:center; gap:8px; width:100%; text-align:left; border:1px solid var(--line); background:var(--card); border-radius:12px; padding:11px 12px; margin-bottom:6px; font-size:15px; font-weight:600; color:var(--ink); cursor:pointer}
+.loc-item .sub{font-weight:500; color:var(--mut); font-size:13px}
+.loc-badge{margin-left:auto; font-size:11px; font-weight:800; border-radius:999px; padding:3px 8px; white-space:nowrap}
+.loc-badge.on{background:var(--teal); color:#fff}
+.loc-badge.soon{background:#EFE7D8; color:#8A6D1F}
+.loc-item.cur{border-color:var(--teal); box-shadow:0 0 0 1px var(--teal)}
+.loc-note{font-size:12.5px; color:var(--mut); margin:12px 2px 0}
+.loc-wait p{color:var(--mut); font-size:14px}
+.loc-wait input{width:100%; box-sizing:border-box; border:1px solid var(--line); border-radius:12px; padding:11px 12px; font-size:15px; background:var(--card); margin:8px 0}
+.loc-wait .wbtn{width:100%; border:none; border-radius:12px; padding:12px; font-size:15px; font-weight:700; background:var(--teal); color:#fff; cursor:pointer}
+.loc-back{background:none; border:none; color:var(--teal); font-weight:700; font-size:14px; cursor:pointer; padding:6px 0}
 </style>
 </head>
 <body>
@@ -238,12 +263,31 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
     <button id="lg-fr" onclick="setLang('fr')">FR</button>
     <button id="lg-en" onclick="setLang('en')">EN</button>
   </div>
-  <div class="langs" style="margin-left:8px"><button id="rg-lu" onclick="setRegion('lu')">LU · €</button><button id="rg-us" onclick="setRegion('us')">Austin · $</button></div>
+  <button class="locbtn" id="loc-btn" onclick="openLoc()"><svg class="icn sm"><use href="#i-pin"/></svg><span id="loc-btn-t">Luxemburgo</span><span class="chev">▾</span></button>
     <div class="hbtns">
     <button class="hbtn" id="btn-install" onclick="installApp()"></button>
     <button class="hbtn" id="btn-share" onclick="shareApp()" aria-label="Compartir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/></svg></button>
   </div>
 </div></header>
+<!-- SELECTOR DE UBICACIÓN -->
+<div class="locsheet" id="loc-sheet" hidden>
+  <div class="locpanel">
+    <div class="loc-head"><h3 id="loc-title">Elige tu ubicación</h3><button class="loc-x" onclick="closeLoc()" aria-label="Cerrar">✕</button></div>
+    <div id="loc-main">
+      <input id="loc-q" class="loc-search" type="text" placeholder="Buscar ciudad o país…" oninput="renderLocs()">
+      <div id="loc-list"></div>
+      <p class="loc-note" id="loc-note"></p>
+    </div>
+    <div id="loc-wait" class="loc-wait" hidden>
+      <button class="loc-back" onclick="locBack()" id="loc-back-b">← Volver</button>
+      <h3 id="loc-wait-t" style="margin:4px 0"></h3>
+      <p id="loc-wait-s"></p>
+      <input id="loc-email" type="email" placeholder="tu@correo.com">
+      <button class="wbtn" onclick="submitWait()" id="loc-wait-b">Avísame</button>
+    </div>
+  </div>
+</div>
+
 
 <div class="wrap">
 
@@ -251,7 +295,7 @@ nav.bottom button .icn{width:23px; height:23px; display:block; margin:0 auto 2px
   <section id="scr-home" class="screen on">
     <div class="hero">
       <svg class="icn wm"><use href="#i-home"/></svg>
-      <span class="loc" id="loc-pill"><svg class="icn sm"><use href="#i-pin"/></svg>Luxemburgo</span>
+      <span class="loc" id="loc-pill" onclick="openLoc()"><svg class="icn sm"><use href="#i-pin"/></svg><span id="loc-pill-t">Luxemburgo</span><span class="chev">▾</span></span>
       <h1 data-i="hero_t">Tu hogar, resuelto en 3 toques</h1>
       <p data-i="hero_s">Profesionales verificados de limpieza, compras, reparaciones y mascotas, cerca de ti en Luxemburgo.</p>
     </div>
@@ -1090,9 +1134,92 @@ if(REGION === "us"){
   document.querySelectorAll('a[href="eliminar-cuenta.html"]').forEach(a => a.href = "eliminar-cuenta-us.html");
 }
 const PILL = { lu: {es:"Luxemburgo", fr:"Luxembourg", en:"Luxembourg"}, us: {es:"Austin, Texas", fr:"Austin, Texas", en:"Austin, TX"} };
-function setPill(){ const el = document.getElementById("loc-pill"); if(el) el.childNodes[el.childNodes.length - 1].textContent = PILL[REGION][S.lang] || PILL[REGION].es; }
+function setPill(){ const tx = PILL[REGION][S.lang] || PILL[REGION].es; const a = document.getElementById("loc-pill-t"); if(a) a.textContent = tx; const b = document.getElementById("loc-btn-t"); if(b) b.textContent = tx; }
+/* ---- selector de ubicación: EE. UU. · Canadá · Europa (excepto Rusia) ---- */
+const LOCZ = { us:{es:"Estados Unidos", fr:"États-Unis", en:"United States"}, ca:{es:"Canadá", fr:"Canada", en:"Canada"}, eu:{es:"Europa", fr:"Europe", en:"Europe"} };
+const LOCT = {
+  title:{es:"Elige tu ubicación", fr:"Choisissez votre lieu", en:"Choose your location"},
+  search:{es:"Buscar ciudad o país…", fr:"Rechercher une ville ou un pays…", en:"Search city or country…"},
+  active:{es:"Activa", fr:"Active", en:"Live"},
+  soon:{es:"Muy pronto", fr:"Bientôt", en:"Coming soon"},
+  note:{es:"Ya operamos en Luxemburgo y Austin. Europa: cobertura en todos los países excepto Rusia. El resto de ciudades abre con lista de espera.", fr:"Nous opérons déjà au Luxembourg et à Austin. Europe : tous les pays sauf la Russie. Les autres villes ouvrent avec une liste d'attente.", en:"We already operate in Luxembourg and Austin. Europe: every country except Russia. Other cities launch with a waitlist."},
+  wait_s:{es:"Todavía no operamos aquí. Déjanos tu correo y serás de los primeros en saberlo cuando abramos.", fr:"Nous n'y opérons pas encore. Laissez votre e-mail et soyez parmi les premiers informés à l'ouverture.", en:"We don't operate here yet. Leave your email and be among the first to know when we launch."},
+  wait_b:{es:"Avísame", fr:"Me prévenir", en:"Notify me"},
+  back:{es:"← Volver", fr:"← Retour", en:"← Back"},
+  wait_ok:{es:"¡Anotado! Te avisaremos cuando abramos en ", fr:"C'est noté ! Nous vous préviendrons à l'ouverture à ", en:"You're on the list! We'll let you know when we launch in "},
+  bad_email:{es:"Escribe un correo válido.", fr:"Saisissez un e-mail valide.", en:"Enter a valid email."}
+};
+const LOCS = [
+  {id:"austin", zone:"us", region:"us", active:true, cur:"$", es:"Austin", fr:"Austin", en:"Austin", sub:{es:"Texas", fr:"Texas", en:"Texas"}},
+  {id:"houston", zone:"us", active:false, es:"Houston", fr:"Houston", en:"Houston", sub:{es:"Texas", fr:"Texas", en:"Texas"}},
+  {id:"dallas", zone:"us", active:false, es:"Dallas", fr:"Dallas", en:"Dallas", sub:{es:"Texas", fr:"Texas", en:"Texas"}},
+  {id:"miami", zone:"us", active:false, es:"Miami", fr:"Miami", en:"Miami", sub:{es:"Florida", fr:"Floride", en:"Florida"}},
+  {id:"toronto", zone:"ca", active:false, es:"Toronto", fr:"Toronto", en:"Toronto", sub:{es:"Ontario", fr:"Ontario", en:"Ontario"}},
+  {id:"vancouver", zone:"ca", active:false, es:"Vancouver", fr:"Vancouver", en:"Vancouver", sub:{es:"Columbia Británica", fr:"Colombie-Britannique", en:"British Columbia"}},
+  {id:"montreal", zone:"ca", active:false, es:"Montreal", fr:"Montréal", en:"Montreal", sub:{es:"Quebec", fr:"Québec", en:"Quebec"}},
+  {id:"lux", zone:"eu", region:"lu", active:true, cur:"€", es:"Luxemburgo", fr:"Luxembourg", en:"Luxembourg", sub:{es:"Todo el país", fr:"Tout le pays", en:"Countrywide"}},
+  {id:"madrid", zone:"eu", active:false, es:"Madrid", fr:"Madrid", en:"Madrid", sub:{es:"España", fr:"Espagne", en:"Spain"}},
+  {id:"paris", zone:"eu", active:false, es:"París", fr:"Paris", en:"Paris", sub:{es:"Francia", fr:"France", en:"France"}},
+  {id:"berlin", zone:"eu", active:false, es:"Berlín", fr:"Berlin", en:"Berlin", sub:{es:"Alemania", fr:"Allemagne", en:"Germany"}},
+  {id:"bruselas", zone:"eu", active:false, es:"Bruselas", fr:"Bruxelles", en:"Brussels", sub:{es:"Bélgica", fr:"Belgique", en:"Belgium"}},
+  {id:"amsterdam", zone:"eu", active:false, es:"Ámsterdam", fr:"Amsterdam", en:"Amsterdam", sub:{es:"Países Bajos", fr:"Pays-Bas", en:"Netherlands"}},
+  {id:"milan", zone:"eu", active:false, es:"Milán", fr:"Milan", en:"Milan", sub:{es:"Italia", fr:"Italie", en:"Italy"}},
+  {id:"lisboa", zone:"eu", active:false, es:"Lisboa", fr:"Lisbonne", en:"Lisbon", sub:{es:"Portugal", fr:"Portugal", en:"Portugal"}},
+  {id:"dublin", zone:"eu", active:false, es:"Dublín", fr:"Dublin", en:"Dublin", sub:{es:"Irlanda", fr:"Irlande", en:"Ireland"}},
+  {id:"viena", zone:"eu", active:false, es:"Viena", fr:"Vienne", en:"Vienna", sub:{es:"Austria", fr:"Autriche", en:"Austria"}},
+  {id:"zurich", zone:"eu", active:false, es:"Zúrich", fr:"Zurich", en:"Zurich", sub:{es:"Suiza", fr:"Suisse", en:"Switzerland"}},
+  {id:"copenhague", zone:"eu", active:false, es:"Copenhague", fr:"Copenhague", en:"Copenhagen", sub:{es:"Dinamarca", fr:"Danemark", en:"Denmark"}},
+  {id:"estocolmo", zone:"eu", active:false, es:"Estocolmo", fr:"Stockholm", en:"Stockholm", sub:{es:"Suecia", fr:"Suède", en:"Sweden"}},
+  {id:"oslo", zone:"eu", active:false, es:"Oslo", fr:"Oslo", en:"Oslo", sub:{es:"Noruega", fr:"Norvège", en:"Norway"}},
+  {id:"helsinki", zone:"eu", active:false, es:"Helsinki", fr:"Helsinki", en:"Helsinki", sub:{es:"Finlandia", fr:"Finlande", en:"Finland"}},
+  {id:"varsovia", zone:"eu", active:false, es:"Varsovia", fr:"Varsovie", en:"Warsaw", sub:{es:"Polonia", fr:"Pologne", en:"Poland"}},
+  {id:"praga", zone:"eu", active:false, es:"Praga", fr:"Prague", en:"Prague", sub:{es:"Chequia", fr:"Tchéquie", en:"Czechia"}},
+  {id:"atenas", zone:"eu", active:false, es:"Atenas", fr:"Athènes", en:"Athens", sub:{es:"Grecia", fr:"Grèce", en:"Greece"}},
+  {id:"londres", zone:"eu", active:false, es:"Londres", fr:"Londres", en:"London", sub:{es:"Reino Unido", fr:"Royaume-Uni", en:"United Kingdom"}}
+];
+let _waitLoc = null;
+function _lt(o){ return o[S.lang] || o.es; }
+function openLoc(){ const sh = document.getElementById("loc-sheet"); sh.hidden = false; document.getElementById("loc-main").hidden = false; document.getElementById("loc-wait").hidden = true; _locTexts(); renderLocs(); }
+function closeLoc(){ document.getElementById("loc-sheet").hidden = true; }
+function _locTexts(){ const T = id => document.getElementById(id); if(T("loc-title")) T("loc-title").textContent = _lt(LOCT.title); if(T("loc-q")) T("loc-q").placeholder = _lt(LOCT.search); if(T("loc-note")) T("loc-note").textContent = _lt(LOCT.note); if(T("loc-back-b")) T("loc-back-b").textContent = _lt(LOCT.back); if(T("loc-wait-b")) T("loc-wait-b").textContent = _lt(LOCT.wait_b); if(T("loc-wait-s")) T("loc-wait-s").textContent = _lt(LOCT.wait_s); }
+function renderLocs(){
+  const q = (document.getElementById("loc-q").value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const list = document.getElementById("loc-list"); let out = "";
+  for(const z of ["us", "ca", "eu"]){
+    const items = LOCS.filter(l => l.zone === z && (!q || (l.es + " " + l.en + " " + l.fr + " " + l.sub.es + " " + l.sub.en).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").indexOf(q) >= 0));
+    if(!items.length) continue;
+    out += '<div class="loc-zone">' + _lt(LOCZ[z]) + "</div>";
+    for(const l of items){
+      const cur = l.active && l.region === REGION;
+      out += '<button class="loc-item' + (cur ? " cur" : "") + '" onclick="pickLoc(\'' + l.id + '\')">' + _lt(l) + ' <span class="sub">· ' + _lt(l.sub) + "</span>" +
+        (l.active ? '<span class="loc-badge on">' + _lt(LOCT.active) + (l.cur ? " · " + l.cur : "") + "</span>" : '<span class="loc-badge soon">' + _lt(LOCT.soon) + "</span>") + "</button>";
+    }
+  }
+  list.innerHTML = out || '<p class="loc-note">—</p>';
+}
+function pickLoc(id){
+  const l = LOCS.find(x => x.id === id); if(!l) return;
+  if(l.active){ if(l.region === REGION){ closeLoc(); } else { setRegion(l.region); } return; }
+  _waitLoc = l;
+  document.getElementById("loc-main").hidden = true;
+  const w = document.getElementById("loc-wait"); w.hidden = false;
+  document.getElementById("loc-wait-t").textContent = _lt(l) + " · " + _lt(l.sub);
+  _locTexts();
+}
+function locBack(){ document.getElementById("loc-wait").hidden = true; document.getElementById("loc-main").hidden = false; }
+function submitWait(){
+  const em = (document.getElementById("loc-email").value || "").trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){ toast(_lt(LOCT.bad_email)); return; }
+  let arr = []; try{ arr = JSON.parse(localStorage.getItem("wlc_waitlist") || "[]"); }catch(e){}
+  arr.push({loc: _waitLoc ? _waitLoc.id : "", email: em, ts: Date.now()});
+  localStorage.setItem("wlc_waitlist", JSON.stringify(arr));
+  toast(_lt(LOCT.wait_ok) + (_waitLoc ? _lt(_waitLoc) : ""));
+  document.getElementById("loc-email").value = "";
+  closeLoc();
+}
+
 const _applyI18n = applyI18n;
-applyI18n = function(){ _applyI18n(); setPill(); };
+applyI18n = function(){ _applyI18n(); setPill(); if(!document.getElementById("loc-sheet").hidden){ _locTexts(); renderLocs(); } };
 (function(){ const b = document.getElementById("rg-" + REGION); if(b) b.classList.add("on"); const pp = document.getElementById("p-price"); if(pp){ pp.min = PRICE_MIN; if(REGION === "us" && !S.myPro) pp.value = 40; } })();
 
 /* ---- arranque ---- */
