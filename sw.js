@@ -1,4 +1,4 @@
-const CACHE = "weluxcare-v6";
+const CACHE = "weluxcare-v7";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png",
   "./img/cat-limpieza.jpg", "./img/cat-compras.jpg", "./img/cat-manitas.jpg", "./img/cat-mascotas.jpg",
   "./img/cat-tecnico.jpg", "./img/cat-jardin.jpg", "./img/cat-orden.jpg"];
